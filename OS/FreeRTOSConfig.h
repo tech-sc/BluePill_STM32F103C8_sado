@@ -80,7 +80,7 @@
  *----------------------------------------------------------*/
 
 /* Ensure stdint is only used by the compiler, and not the assembler. */
-#ifdef __ICCARM__
+#if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
 	#include <stdint.h>
 	extern uint32_t SystemCoreClock;
 #endif
@@ -121,10 +121,11 @@ to exclude the API function. */
 #define INCLUDE_vTaskPrioritySet		1
 #define INCLUDE_uxTaskPriorityGet		1
 #define INCLUDE_vTaskDelete				1
-#define INCLUDE_vTaskCleanUpResources	1
+#define INCLUDE_vTaskCleanUpResources	0
 #define INCLUDE_vTaskSuspend			1
-#define INCLUDE_vTaskDelayUntil			1
+#define INCLUDE_vTaskDelayUntil			0
 #define INCLUDE_vTaskDelay				1
+#define INCLUDE_xTaskGetSchedulerState	1
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS
