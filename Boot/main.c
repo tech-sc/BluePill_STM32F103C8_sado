@@ -15,6 +15,7 @@
 //#include <stdio.h>
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
+#include "BSP_LED.h"
 #include "os.h"
 
 
@@ -25,6 +26,8 @@
 static void BSP_init(void)
 {
 	__HAL_RCC_PWR_CLK_ENABLE();
+	// LEDÇ∆TACT-SWÇÃèâä˙ê›íË
+	BSP_LED_init();
 }
 
 /**
@@ -91,6 +94,7 @@ static void SystemClock_Config(void)
  */
 void main( void )
 {
+	BSP_init();
 	SystemClock_Config();
 
 	osKernel_start();
