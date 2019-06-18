@@ -24,6 +24,9 @@
 #define osMutex_take			xSemaphoreTake
 #define osMutex_give			xSemaphoreCreateMutex
 
+#define osMem_malloc			pvPortMalloc
+#define osMem_free				pvPortFree
+
 typedef xTaskHandle				osTaskHandle_t;
 typedef xQueueHandle			osQueHandle_t;
 typedef xSemaphoreHandle		osMutexHandle_t;
