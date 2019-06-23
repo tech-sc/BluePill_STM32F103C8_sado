@@ -83,6 +83,7 @@
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
 	#include <stdint.h>
 	//extern uint32_t SystemCoreClock;
+	#include "APL_osRes.h"		// osHEAP_SZÇÃíËã`
 #endif
 
 #define configUSE_PREEMPTION			1
@@ -92,7 +93,7 @@
 #define configTICK_RATE_HZ				( ( portTickType ) 100 )			// tick=10ms
 #define configMAX_PRIORITIES			( ( unsigned portBASE_TYPE ) 5 )
 #define configMINIMAL_STACK_SIZE		( ( unsigned short ) 64 )			// 64Å~4=256byte
-#define configTOTAL_HEAP_SIZE			( ( size_t ) ( 10 * 1024 ) )
+#define configTOTAL_HEAP_SIZE			( ( size_t ) ( osHEAP_SZ + (1024) ) )
 #define configMAX_TASK_NAME_LEN			( 16 )
 #define configUSE_TRACE_FACILITY		1
 #define configUSE_16_BIT_TICKS			0
@@ -111,7 +112,7 @@
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
 
 /* Software timer definitions. */
-#define configUSE_TIMERS				1
+#define configUSE_TIMERS				0
 #define configTIMER_TASK_PRIORITY		( 2 )
 #define configTIMER_QUEUE_LENGTH		10
 #define configTIMER_TASK_STACK_DEPTH	( configMINIMAL_STACK_SIZE * 1 )
@@ -154,7 +155,10 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 	
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
-#define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }	
+#define configASSERT( x ) { if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }	}
+
+#define traceMALLOC( pvAddress, uiSize )	{ printf("malloc(%p,%u)\n", pvAddress, uiSize); }
+
 	
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
 standard names. */

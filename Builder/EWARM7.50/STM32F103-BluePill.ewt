@@ -2099,9 +2099,18 @@
     <file>
       <name>$PROJ_DIR$\..\..\APL\BSP_LED.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\ExtLED.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\ExtSW.c</name>
+    </file>
   </group>
   <group>
     <name>Boot</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\Boot\clock.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\Boot\main.c</name>
     </file>
@@ -2137,6 +2146,9 @@
     </group>
     <file>
       <name>$PROJ_DIR$\..\..\CubeF1Drivers\startup_stm32f103xb.s</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\CubeF1Drivers\stm32f1xx_it.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\CubeF1Drivers\system_stm32f1xx.c</name>

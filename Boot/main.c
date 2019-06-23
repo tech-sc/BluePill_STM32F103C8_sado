@@ -16,6 +16,8 @@
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
 #include "BSP_LED.h"
+#include "ExtLED.h"
+#include "ExtSW.h"
 #include "os.h"
 
 
@@ -25,6 +27,7 @@
  */
 static void BSP_init(void)
 {
+//	__HAL_RCC_AFIO_CLK_ENABLE();
 	__HAL_RCC_PWR_CLK_ENABLE();
 	// LED‚ÆTACT-SW‚Ì‰ŠúÝ’è
 	BSP_LED_init();
@@ -36,10 +39,7 @@ static void BSP_init(void)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-
-  /* USER CODE END Error_Handler_Debug */
+	while(1);
 }
 
 /**
@@ -94,9 +94,12 @@ static void SystemClock_Config(void)
  */
 void main( void )
 {
-	BSP_init();
 	SystemClock_Config();
+	BSP_init();
+	ExtLED_init();
+	ExtSW_init();
 
 	osKernel_start();
+	//Reset->LED ON(2.4sec)
 	for(;;);
 }

@@ -580,6 +580,7 @@
         <option>
           <name>AUserIncludes</name>
           <state>$PROJ_DIR$\..\..\OS</state>
+          <state>$PROJ_DIR$\..\..\APL</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -1932,9 +1933,18 @@
     <file>
       <name>$PROJ_DIR$\..\..\APL\BSP_LED.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\ExtLED.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\ExtSW.c</name>
+    </file>
   </group>
   <group>
     <name>Boot</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\Boot\clock.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\Boot\main.c</name>
     </file>
@@ -1972,6 +1982,9 @@
       <name>$PROJ_DIR$\..\..\CubeF1Drivers\startup_stm32f103xb.s</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\CubeF1Drivers\stm32f1xx_it.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\CubeF1Drivers\system_stm32f1xx.c</name>
     </file>
   </group>
@@ -1994,12 +2007,12 @@
           <name>MemMang</name>
           <file>
             <name>$PROJ_DIR$\..\..\OS\FreeRTOS\portable\MemMang\heap_1.c</name>
-            <excluded>
-              <configuration>Debug</configuration>
-            </excluded>
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\OS\FreeRTOS\portable\MemMang\heap_2.c</name>
+            <excluded>
+              <configuration>Debug</configuration>
+            </excluded>
           </file>
         </group>
       </group>
