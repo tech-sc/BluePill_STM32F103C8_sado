@@ -157,7 +157,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 header file. */
 #define configASSERT( x ) { if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); for( ;; ); }	}
 
-#define traceMALLOC( pvAddress, uiSize )	{ printf("malloc(%p,%u)\n", pvAddress, uiSize); }
+//#define traceMALLOC( pvAddress, uiSize )	{ printf("malloc(%p,%u)\n", pvAddress, uiSize); }
 
 	
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
