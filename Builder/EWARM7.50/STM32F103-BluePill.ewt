@@ -2105,6 +2105,9 @@
     <file>
       <name>$PROJ_DIR$\..\..\APL\ExtSW.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\UART.c</name>
+    </file>
   </group>
   <group>
     <name>Boot</name>
@@ -2141,6 +2144,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_uart.c</name>
         </file>
       </group>
     </group>
