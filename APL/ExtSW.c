@@ -16,7 +16,6 @@
  */
 #include "ExtLED.h"
 #include "ExtSW.h"
-#include "stm32f1xx_ll_exti.h"
 
 /**
  * @brief ŠO•”‰ñ˜HŠî”ÂSW‚Ì‰Šúİ’è.
@@ -43,16 +42,6 @@ void ExtSW_init(void)
 	/* EXTI line[9:5] interrupt init */
 	HAL_NVIC_SetPriority( EXTI9_5_IRQn, EXTI9_5_PRIORITY, 0 );
 	HAL_NVIC_EnableIRQ( EXTI9_5_IRQn );
-#if 0
-	/** SW1 pin configuration */
-
-	/* Enable ExtiLine Interrupt configuration */
-	LL_EXTI_EnableIT_0_31( LL_EXTI_LINE_8 );
-	/* Enable ExtiLine Rising Edge Trigger configuration */
-	LL_EXTI_EnableRisingTrig_0_31( LL_EXTI_LINE_8 );
-	/* Enable ExtiLine Falling Edge Trigger configuration */
-	LL_EXTI_EnableFallingTrig_0_31( LL_EXTI_LINE_8 );
-#endif
 }
 
 /**
