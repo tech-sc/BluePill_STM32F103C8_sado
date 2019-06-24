@@ -18,6 +18,7 @@
 #include "BSP_LED.h"
 #include "ExtLED.h"
 #include "ExtSW.h"
+#include "UART.h"
 #include "os.h"
 
 
@@ -95,9 +96,11 @@ static void SystemClock_Config(void)
 void main( void )
 {
 	SystemClock_Config();
+
 	BSP_init();
 	ExtLED_init();
 	ExtSW_init();
+	UART_init();
 
 	osKernel_start();
 	//Reset->LED ON(2.4sec)
