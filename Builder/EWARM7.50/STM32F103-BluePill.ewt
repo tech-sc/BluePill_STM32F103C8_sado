@@ -2112,9 +2112,6 @@
   <group>
     <name>Boot</name>
     <file>
-      <name>$PROJ_DIR$\..\..\Boot\clock.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\Boot\main.c</name>
     </file>
   </group>
