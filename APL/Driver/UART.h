@@ -40,6 +40,7 @@ extern xSemaphoreHandle	UART_RxSemaph;
  */
 extern int  UART_init( void );
 extern int  UART_setMode( uint16_t mode );
+extern uint16_t  UART_getMode( void );
 extern int  UART_getchar( void );
 extern int  UART_putchar( char c );
 extern int  UART_puts( char *ptr );

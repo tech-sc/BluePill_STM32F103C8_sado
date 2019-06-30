@@ -1,18 +1,19 @@
 #include "os.h"
 #include "BSP_LED.h"
 
-#ifdef USE_FULL_ASSERT
+//#ifdef USE_FULL_ASSERT
+#include "stm32_assert.h"
 /******************************************************************************
  * @brief   assert_param() fail function
  * @param   (I)file		pointer to the source file name
  * @param   (I)line		line source number
  * @retval  None
  */
-void assert_failed(uint8_t* file, uint32_t line)
+void assert_failed(const char* file, int line)
 {
 	for( ;; );
 }
-#endif /* USE_FULL_ASSERT */
+//#endif /* USE_FULL_ASSERT */
 
 #if( configUSE_TICK_HOOK ==1 )
 /******************************************************************************

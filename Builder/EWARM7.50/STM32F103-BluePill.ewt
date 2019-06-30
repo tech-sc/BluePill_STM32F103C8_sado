@@ -2096,17 +2096,23 @@
   </configuration>
   <group>
     <name>APL</name>
+    <group>
+      <name>Driver</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\BSP_LED.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\ExtLED.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\ExtSW.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\UART.c</name>
+      </file>
+    </group>
     <file>
-      <name>$PROJ_DIR$\..\..\APL\BSP_LED.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\ExtLED.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\ExtSW.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\UART.c</name>
+      <name>$PROJ_DIR$\..\..\APL\shell.c</name>
     </file>
   </group>
   <group>

@@ -140,6 +140,15 @@ int UART_setMode( uint16_t mode )
 }
 
 /**************************************************************************//**
+ * @brief	UARTÉÇÅ[ÉhÇéÊìæÇ∑ÇÈ
+ * @return	ASCII_MODE/BINARY_MODE
+ */
+uint16_t UART_getMode( void )
+{
+	return uart_TransMode;
+}
+
+/**************************************************************************//**
  * @brief This function handles USART2 global interrupt.
  */
 void USART2_IRQHandler(void)

@@ -4,6 +4,7 @@
 enum {
 	IDLE_TASKID = 0,
 	TMRSVC_TASKID,
+	SHELL_IASKID,
 	MAX_TASKNUM,
 };
 enum {
@@ -27,6 +28,7 @@ enum {
 // タスクのスタック・メモリサイズ
 #define	osIDLE_STACKSZ		256
 #define	osTMRSVC_STACKSZ	256
+#define	SHELLTASK_STACKSZ	256
 #define TOTAL_STACKSZ		( osIDLE_STACKSZ 		\
 							+ osTMRSVC_STACKSZ )
 

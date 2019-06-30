@@ -20,6 +20,7 @@
 #include "ExtSW.h"
 #include "UART.h"
 #include "os.h"
+#include "shell.h"
 
 
 /**
@@ -101,6 +102,8 @@ void main( void )
 	ExtLED_init();
 	ExtSW_init();
 	UART_init();
+
+	shell_init();
 
 	osKernel_start();
 	//Reset->LED ON(2.4sec)

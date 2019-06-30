@@ -317,6 +317,7 @@
           <state>$PROJ_DIR$\..\..\OS</state>
           <state>$PROJ_DIR$\..\..\OS\FreeRTOS\include</state>
           <state>$PROJ_DIR$\..\..\OS\FreeRTOS\portable\ARM_CM3</state>
+          <state>$PROJ_DIR$\..\..\APL\Driver</state>
           <state>$PROJ_DIR$\..\..\APL</state>
         </option>
         <option>
@@ -1930,17 +1931,23 @@
   </configuration>
   <group>
     <name>APL</name>
+    <group>
+      <name>Driver</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\BSP_LED.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\ExtLED.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\ExtSW.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\UART.c</name>
+      </file>
+    </group>
     <file>
-      <name>$PROJ_DIR$\..\..\APL\BSP_LED.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\ExtLED.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\ExtSW.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\UART.c</name>
+      <name>$PROJ_DIR$\..\..\APL\shell.c</name>
     </file>
   </group>
   <group>
