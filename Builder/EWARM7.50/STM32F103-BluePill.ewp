@@ -182,6 +182,7 @@
         <option>
           <name>CCDefines</name>
           <state>STM32F103xB</state>
+          <state>USE_FULL_LL_DRIVER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1943,6 +1944,9 @@
         <name>$PROJ_DIR$\..\..\APL\Driver\ExtSW.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\TIMER.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\APL\Driver\UART.c</name>
       </file>
     </group>
@@ -1984,7 +1988,16 @@
           <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim_ex.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_uart.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_tim.c</name>
         </file>
       </group>
     </group>

@@ -19,6 +19,7 @@
 #include "ExtLED.h"
 #include "ExtSW.h"
 #include "UART.h"
+#include "TIMER.h"
 #include "os.h"
 #include "shell.h"
 
@@ -102,6 +103,7 @@ void main( void )
 	ExtLED_init();
 	ExtSW_init();
 	UART_init();
+	TIMER_init();
 
 	shell_init();
 
