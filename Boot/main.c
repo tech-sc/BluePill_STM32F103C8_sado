@@ -12,16 +12,13 @@
  * @par Copyright
  *	2014-19 Emb-se.com All rights reserved.
  */
-//#include <stdio.h>
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
 #include "BSP_LED.h"
 #include "ExtLED.h"
 #include "ExtSW.h"
-#include "UART.h"
 #include "os.h"
-#include "shell.h"
-
+#include "apl_init.h"
 
 /**
  * @brief オンボードペリフェラル初期設定
@@ -31,7 +28,7 @@ static void BSP_init(void)
 {
 //	__HAL_RCC_AFIO_CLK_ENABLE();
 	__HAL_RCC_PWR_CLK_ENABLE();
-	// LEDとTACT-SWの初期設定
+	/* LEDとTACT-SWの初期設定 */
 	BSP_LED_init();
 }
 
@@ -101,9 +98,8 @@ void main( void )
 	BSP_init();
 	ExtLED_init();
 	ExtSW_init();
-	UART_init();
 
-	shell_init();
+	apl_init();
 
 	osKernel_start();
 	//Reset->LED ON(2.4sec)

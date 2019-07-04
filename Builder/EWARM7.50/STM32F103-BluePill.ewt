@@ -2108,15 +2108,27 @@
         <name>$PROJ_DIR$\..\..\APL\Driver\ExtSW.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\TIMER.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\APL\Driver\UART.c</name>
       </file>
     </group>
     <file>
+      <name>$PROJ_DIR$\..\..\APL\APL_osRes.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\APL\shell.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\TIMms.c</name>
     </file>
   </group>
   <group>
     <name>Boot</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\APL\apl_init.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\Boot\main.c</name>
     </file>
@@ -2149,7 +2161,16 @@
           <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim_ex.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_uart.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_tim.c</name>
         </file>
       </group>
     </group>
