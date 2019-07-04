@@ -82,29 +82,26 @@ SHELL_COMMAND_t	shell_CommandTbl = {
 
 
 /**************************************************************************//**
- * @brief	CLIコマンドシェル初期設定
- * @param	None
- * @return	None
+ * @brief  CLIコマンドシェル初期設定
  */
 void shell_init( void )
 {
 	portBASE_TYPE	retv;
 	xTaskHandle		handle;
 
+	UART_init();
+
 	shell_CoreBuff_len     = 0;
 	shell_CoreBuffCursol_p = shell_CoreBuff;
 
-	retv = xTaskCreate( &shell_task, "Shell", SHELLTASK_STACKSZ/4,	// stack size=64*4=256byte
+	retv = xTaskCreate( &shell_task, "Shell", shellTASK_STACKSZ/4,	// stack size=64*4=256byte
 						NULL, 3 | portPRIVILEGE_BIT, &handle );
-	if( retv != pdPASS ){
-		assert_failed( __FUNCTION__, __LINE__ );
-	}
+	configASSERT(retv == pdPASS);
 }
 
 /**************************************************************************//**
- * @brief	CLIコマンドシェルタスク
- * @param	arg		[in]タスク起動パラメータ
- * @return	None
+ * @brief  CLIコマンドシェルタスク
+ * @param[in] arg  タスク起動パラメータ
  */
 void shell_task( void *arg )
 {
@@ -132,8 +129,7 @@ void shell_task( void *arg )
 }
 
 /**************************************************************************//**
- * @brief	CLIコマンドシェルコア
- * @param	None
+ * @brief  CLIコマンドシェルコア
  * @return	None
  */
 static int shell_core( void )
@@ -226,10 +222,9 @@ static int shell_core( void )
 }
 
 /**************************************************************************//**
- * @brief	ESCシーケンス処理
- * @param	None
- * @return	1		キー処理済み
- * @return	0		不明キー(未処理)
+ * @brief  ESCシーケンス処理
+ * @retval 1  キー処理済み
+ * @retval 0  不明キー(未処理)
  */
 static int shell_esc( void )
 {
@@ -297,12 +292,12 @@ static int shell_esc( void )
 }
 
 /**************************************************************************//**
- * @brief	CLIコマンド部分検索
- * @param	p_item	[in]検索開始するコマンド情報
- * @param	str		[in]検索するコマンド文字列
- * @param	str		[in]検索するコマンドの文字長
- * @return	NULL	見つからない
- * @return	!NULL	部分一致したコマンドのコマンド情報
+ * @brief  CLIコマンド部分検索
+ * @param[in] p_item  検索開始するコマンド情報
+ * @param[in] str  検索するコマンド文字列
+ * @param[in] len  検索するコマンドの文字長
+ * @retval NULL  見つからない
+ * @retval !NULL  部分一致したコマンドのコマンド情報
  */
 static SHELL_COMMAND_t *shell_find_command( SHELL_COMMAND_t *p_list, char *str, int len )
 {
