@@ -34,11 +34,11 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
+#include "stm32_assert.h"
 //#include "stm32f1xx_hal.h"
 //#include "stm32f1xx_hal_tim.h"
 #include "stm32f1xx_ll_tim.h"
 
-typedef uint16_t    TIMCNT_t;	/**< タイマカウンタレジスタ型(16bitカウンタ) */
 
 /**
  * @brief タイマ初期設定
@@ -49,6 +49,7 @@ extern void TIMER_init( void );
  * @brief コンペアマッチ値セット
  */
 #define TIMER_setCompReg( val )		LL_TIM_OC_SetCompareCH1(TIM4, val)
+#define TIMER_getTick()				LL_TIM_GetCounter(TIM4)
 
 
 /**

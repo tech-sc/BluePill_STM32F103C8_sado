@@ -33,8 +33,9 @@
  * - 予め一度だけ TIMms_initTimer() を呼び出す。
  */
 #include "TIMER.h"
+#include "TIMms.h"
 
-//TIM_HandleTypeDef htim4;
+#include "stm32f1xx_hal.h"
 #include "stm32f1xx_ll_cortex.h"
 #include "stm32f1xx_ll_bus.h"
 
@@ -75,6 +76,7 @@ void TIMER_init( void )
 
   LL_TIM_EnableIT_CC1(TIM4);
   /* カウンタスタート */
+	__HAL_DBGMCU_FREEZE_TIM4();
   LL_TIM_EnableCounter(TIM4);
 }
 
@@ -83,10 +85,16 @@ void TIMER_init( void )
  */
 void TIM4_IRQHandler(void)
 {
+	int		over;
+	/* コンペアマッチ */
 	if( LL_TIM_IsActiveFlag_CC1(TIM4) ) {
 		LL_TIM_ClearFlag_CC1( TIM4 );
+		over = 0;
 	}
+	/* カウンタオーバーフロー */
 	if( LL_TIM_IsActiveFlag_UPDATE(TIM4) ) {
 		LL_TIM_ClearFlag_UPDATE( TIM4 );
+		over = 1;
 	}
+	TIMms_expire( over );
 }

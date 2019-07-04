@@ -4,7 +4,9 @@
 enum {
 	IDLE_TASKID = 0,
 	TMRSVC_TASKID,
-	SHELL_IASKID,
+	SHELL_TASKID,
+	TIMms_TASKID,
+	APL_INITTASKID,
 	MAX_TASKNUM,
 };
 enum {
@@ -13,6 +15,8 @@ enum {
 };
 enum {
 	UART_RXMUTEXID = 0,
+	TIMms_MUTEXID,
+	APL_INITMUTEXID,
 	MAX_MUTEXNUM,
 };
 
@@ -28,9 +32,13 @@ enum {
 // タスクのスタック・メモリサイズ
 #define	osIDLE_STACKSZ		256
 #define	osTMRSVC_STACKSZ	256
-#define	SHELLTASK_STACKSZ	256
-#define TOTAL_STACKSZ		( osIDLE_STACKSZ 		\
-							+ osTMRSVC_STACKSZ )
+#define	shellTASK_STACKSZ	256
+#define	TIMmsTASK_STACKSZ	256
+#define	APLinitTASK_STACKSZ	256
+#define TOTAL_STACKSZ		( osIDLE_STACKSZ + osTMRSVC_STACKSZ \
+                            + shellTASK_STACKSZ \
+                            + TIMmsTASK_STACKSZ \
+							+ APLinitTASK_STACKSZ )
 
 // キューのコンテンツ・メモリサイズ
 #define	osTMRSVC_QUESZ		( 12*10+8 )
@@ -40,5 +48,10 @@ enum {
 #define osHEAP_SZ			( TOTAL_MNGSZ			\
 							+ TOTAL_STACKSZ 		\
 							+ TOTAL_QUESZ)
+
+#define TIMmsTASK_PRI		(configMAX_PRIORITIES -1)
+#define shellTASK_PRI		(configMAX_PRIORITIES -2)
+#define APLinitTASK_PRI		(configMAX_PRIORITIES -4)
+
 
 #endif // _APL_osRes.h_
