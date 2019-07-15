@@ -7,6 +7,7 @@
  */
 #include "os.h"
 #include "TIMms.h"
+#include "ExtLED.h"
 #include "shell.h"
 #include "apl_init.h"
 
@@ -50,7 +51,7 @@ void apl_init( void )
  */
 void apl_initTask( void *arg )
 {
-	TIMms_reqTimer( 100, &tmX_expire, &tm1 );
+	TIMms_reqTimer( 500, &tmX_expire, &tm1 );
 
     while( 1 ){
         osMutex_take( expire_mutex, portMAX_DELAY );
@@ -59,6 +60,7 @@ void apl_initTask( void *arg )
 
 static void tmX_expire( void *handle )
 {
-	TIMms_reqTimer( 100, &tmX_expire, handle );
+	ExtLED2_toggle();
+	TIMms_reqTimer( 500, &tmX_expire, handle );
 //    osMutex_give( expire_mutex );
 }

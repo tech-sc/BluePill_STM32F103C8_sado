@@ -34,8 +34,10 @@
  * @{
  */
 
-#define ExtLED1_POPT		GPIOA
-#define ExtLED1_PIN		GPIO_PIN_0
+#define ExtLED1_POPT		GPIOB
+#define ExtLED1_PIN			GPIO_PIN_0
+#define ExtLED2_POPT		GPIOB
+#define ExtLED2_PIN			GPIO_PIN_1
 
 /**
  * @brief 外部回路基板LEDの初期設定.
@@ -47,31 +49,34 @@
 extern void ExtLED_init(void);
 
 /**
- * @brief 外部回路基板LED1の点灯.
+ * @brief 外部回路基板LEDXの点灯.
  *
- * LED1ポートのLEDを点灯する。
+ * LEDXポートのLEDを点灯する。
  * @param なし
  * @return なし
  */
-#define ExtLED1_turnON()		HAL_GPIO_WritePin( ExtLED1_POPT, ExtLED1_PIN, GPIO_PIN_RESET )
+#define ExtLED1_turnON()	HAL_GPIO_WritePin( ExtLED1_POPT, ExtLED1_PIN, GPIO_PIN_RESET )
+#define ExtLED2_turnON()	HAL_GPIO_WritePin( ExtLED2_POPT, ExtLED2_PIN, GPIO_PIN_RESET )
 
 /**
- * @brief 外部回路基板LED1の消灯.
+ * @brief 外部回路基板LEDXの消灯.
  *
- * LED1ポートのLEDを消灯する。
+ * LEDXポートのLEDを消灯する。
  * @param なし
  * @return なし
  */
 #define ExtLED1_turnOFF()	HAL_GPIO_WritePin( ExtLED1_POPT, ExtLED1_PIN, GPIO_PIN_SET )
+#define ExtLED2_turnOFF()	HAL_GPIO_WritePin( ExtLED2_POPT, ExtLED2_PIN, GPIO_PIN_SET )
 
 /**
- * @brief 外部回路基板LED1のトグル出力
+ * @brief 外部回路基板LEDXのトグル出力
  *
- * LED1ポートのLEDを点灯または消灯にトグルする。
+ * LEDXポートのLEDを点灯または消灯にトグルする。
  * @param なし
  * @return なし
  */
-#define ExtLED1_toggle()		HAL_GPIO_TogglePin( ExtLED1_POPT, ExtLED1_PIN )
+#define ExtLED1_toggle()	HAL_GPIO_TogglePin( ExtLED1_POPT, ExtLED1_PIN )
+#define ExtLED2_toggle()	HAL_GPIO_TogglePin( ExtLED2_POPT, ExtLED2_PIN )
 
 
 #endif // _ExtLED_H_
