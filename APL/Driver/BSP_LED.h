@@ -10,11 +10,14 @@
  *
  * @copyright 2018 Emb-se.com. All rights reserved.
  */
+#ifndef _BSP_LED_H_
+#define _BSP_LED_H_
+
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
 
 /**
- * @page PAGE_BluePill_LED BluePillオンボード
+ * @page PAGE_BSP_LED BluePillオンボード
  *
  * @section SEC1_BluePill_LED BluePillオンボードLED制御API
  * |APIs     |機能名称|
@@ -25,7 +28,7 @@
  * |BSP_LED_toggle() | オンボードLEDのトグル出力 |
  */
 /**
- * @addtogroup GROUP_BluePill_LED BluePillオンボードLED制御
+ * @addtogroup GROUP_BSP_LED BluePillオンボードLED制御
  * @brief BluePillオンボードLED制御APIを提供する。<br>
  * @details LEDは、PC13にプルアップ接続される。<br>
  * @{
@@ -35,41 +38,39 @@
 #define LED_PIN			GPIO_PIN_13
 
 /**
- * @brief オンボードLEDの初期設定
- *
- * GPIO(PC13)はプルアップで初期設定後、inactive(1)で初期化する。
- * @param なし
- * @return なし
+ * @brief オンボードLEDの初期設定.
  */
 extern void BSP_LED_init(void);
 
 /**
- * @brief オンボードLEDの点灯
+ * @brief オンボードLEDの点灯.
  *
- * GPIO(PC13)のLEDを点灯する。
- * @param なし
- * @return なし
+ * LEDを点灯する.
+ * @param なし.
+ * @return なし.
  */
 #define BSP_LED_turnON()		HAL_GPIO_WritePin( LED_POPT, LED_PIN, GPIO_PIN_RESET )
 
 /**
- * @brief オンボードLEDの消灯
+ * @brief オンボードLEDの消灯.
  *
- * GPIO(PC13)のLEDを消灯する。
- * @param なし
- * @return なし
+ * LEDを消灯する.
+ * @param なし.
+ * @return なし.
  */
 #define BSP_LED_turnOFF()		HAL_GPIO_WritePin( LED_POPT, LED_PIN, GPIO_PIN_SET )
 
 /**
- * @brief オンボードLEDのトグル出力
+ * @brief オンボードLEDのトグル出力.
  *
- * GPIO(PC13)のLEDを点灯または消灯にトグルする。
- * @param なし
- * @return なし
+ * LEDを点灯または消灯にトグルする.
+ * @param なし.
+ * @return なし.
  */
 #define BSP_LED_toggle()		HAL_GPIO_TogglePin( LED_POPT, LED_PIN )
 
 /**
  * @} end of addtogroup
  */
+
+#endif //_BSP_LED_H_

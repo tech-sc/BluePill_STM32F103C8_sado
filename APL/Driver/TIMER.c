@@ -1,8 +1,8 @@
 /**
  * @file  TIMER.c
- * @brief タイマコントローラへの制御API.
+ * @brief タイマコントローラの制御API.
  * 
- * タイマコントローラへの制御APIを提供する.
+ * タイマコントローラの制御APIを提供する.
  * 
  * @author      Teru
  * @date        2019.06.27
@@ -14,23 +14,8 @@
  * @copyright   2019 Emb-se.com.
  */
 /**
- * @mainpage
- * テンプレート・トップページ
- * 
- * @ref TIMER_title
- */
-/**
- * @page TIMER_title タイマライブラリ
- *
- * @section TIMER_api API一覧
- * | API名              | 機能       |
- * |:------------------ |:---------- |
- * | TIMms_initTimer()  | タイマ機能初期設定 |
- * | TIMms_reqTimer()   | タイマ要求 |
- * | TIMms_cancelTimer()| タイマ取消 |
- *
- * @section TIMER_usage 使用方法
- * - 予め一度だけ TIMms_initTimer() を呼び出す。
+ * @addtogroup GROUP_TIMER
+ * @{
  */
 #include "TIMER.h"
 #include "TIMms.h"
@@ -40,7 +25,7 @@
 #include "stm32f1xx_ll_bus.h"
 
 /**
- * @brief 初期設定API
+ * @brief タイマコントローラの初期設定.
  */
 void TIMER_init( void )
 {
@@ -81,7 +66,9 @@ void TIMER_init( void )
 }
 
 /**
- * @brief TIM4 割込みハンドラ
+ * @brief TIM4 割込みハンドラ.
+ *
+ * タイマ機能の発火処理をコールする.
  */
 void TIM4_IRQHandler(void)
 {
@@ -96,5 +83,10 @@ void TIM4_IRQHandler(void)
 		LL_TIM_ClearFlag_UPDATE( TIM4 );
 		over = 1;
 	}
+	/** @li タイマ機能の発火処理 */
 	TIMms_expire( over );
 }
+
+/**
+ * @} end of addtogroup
+ */

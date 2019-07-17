@@ -18,9 +18,9 @@
 #include "ExtSW.h"
 
 /**
- * @brief 外部回路基板SWの初期設定.
+ * @brief 外部SWの初期設定.
  *
- * ExtSW1ポートはプルアップで初期設定する.
+ * SWはプルアップで初期設定する.
  * @param なし.
  * @return なし.
  */
@@ -33,12 +33,14 @@ void ExtSW_init(void)
 		__HAL_RCC_GPIOA_CLK_ENABLE();
 	}
 
-	/** Configure GPIO pin */
+	/** @li ExtSW1初期設定 */
+	/* Configure GPIO pin */
 	GPIO_InitStruct.Pin   = ExtSW1_PIN;
 	GPIO_InitStruct.Mode  = GPIO_MODE_IT_FALLING;
 	GPIO_InitStruct.Pull  = GPIO_PULLUP;
 	HAL_GPIO_Init( ExtSW1_POPT, &GPIO_InitStruct );
 
+	/** @li EXTI[9:5]割込みの設定 */
 	/* EXTI line[9:5] interrupt init */
 	HAL_NVIC_SetPriority( EXTI9_5_IRQn, EXTI9_5_PRIORITY, 0 );
 	HAL_NVIC_EnableIRQ( EXTI9_5_IRQn );

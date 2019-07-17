@@ -12,7 +12,7 @@
  * @copyright 2014 Emb-se.com.
  */
 /**
- * @addtogroup GROUP_UART RS232Cレベル変換向けUART制御.
+ * @addtogroup GROUP_UART
  * @{
  */
 #include "stm32f1xx_hal.h"
@@ -23,10 +23,8 @@
 #include "stm32f1xx_ll_usart.h"
 #include "UART.h"
 
-/**************************************************************************//**
- * @brief 定数定義
- */
-#define UART				USART2		/* 使用するペリフェラル */
+
+#define UART				USART2		/**< 使用するペリフェラル */
 
 #define UART_TX_PIN			GPIO_PIN_2
 #define UART_TX_GPIO_PORT	GPIOA
@@ -34,19 +32,16 @@
 #define UART_RX_GPIO_PORT	GPIOA
 
 
-/**************************************************************************//**
- * @brief 変数定義
- */
-/** HAL APIハンドル */
+/* HAL APIハンドル */
 static UART_HandleTypeDef	uart_HandleStruct = {0};
 
-/** UART受信待ちセマフォ */
-xSemaphoreHandle	uart_RxSemaph;
+/* UART受信待ちセマフォ */
+static xSemaphoreHandle	uart_RxSemaph;
 
-/** 通信モード */
+/* 通信モード */
 static uint16_t		uart_TransMode;
 
-/** UART受信バッファ */
+/* UART受信バッファ */
 #define UART_RXBUFF_SIZE	16
 static uint8_t		uart_RxBuff[ UART_RXBUFF_SIZE ];
 static uint8_t		*uart_RxBuffWt_p;			/* バッファ書き込みポインタ */
@@ -54,9 +49,9 @@ static uint8_t		*uart_RxBuffRd_p;			/* バッファ読み出しポインタ */
 
 
 /**************************************************************************//**
- * @brief	UARTドライバ初期設定.
- * @param	None
- * @return	None
+ * @brief	UARTコントローラ初期設定.
+ * @retval	0	Success
+ * @retval	-1	Error
  */
 static int UART_config( void )
 {
@@ -107,8 +102,8 @@ static int UART_config( void )
 
 /**************************************************************************//**
  * @brief	UARTドライバ初期設定
- * @param	None
- * @return	None
+ * @retval	0	Success
+ * @retval	-1	Error
  */
 int UART_init( void )
 {
@@ -126,9 +121,10 @@ int UART_init( void )
 }
 
 /**************************************************************************//**
- * @brief	UARTモードを設定する
+ * @brief	モードを設定する
  * @param[in]	mode	ASCII_MODE/BINARY_MODE
- * @return	なし
+ * @retval	0	Success
+ * @retval	-1	Error
  */
 int UART_setMode( uint16_t mode )
 {
@@ -140,8 +136,9 @@ int UART_setMode( uint16_t mode )
 }
 
 /**************************************************************************//**
- * @brief	UARTモードを取得する
- * @return	ASCII_MODE/BINARY_MODE
+ * @brief	モードを取得する.
+ * @retval	ASCII_MODE
+ * @retval	BINARY_MODE
  */
 uint16_t UART_getMode( void )
 {
@@ -149,9 +146,9 @@ uint16_t UART_getMode( void )
 }
 
 /**************************************************************************//**
- * @brief This function handles USART2 global interrupt.
+ * @brief	This function handles USART2 global interrupt.
  */
-void USART2_IRQHandler(void)
+void USART2_IRQHandler( void )
 {
 	portBASE_TYPE	each_dispatch, dispatch;
 
@@ -176,10 +173,9 @@ void USART2_IRQHandler(void)
 }
 
 /**************************************************************************//**
- * @brief	UARTから１バイト取得する
- * @param	None
- * @return	取得したデータ
- * @note	UART受信バッファから１バイトデータを取り出す
+ * @brief	UARTから１バイト取得する.
+ * @return	取得したデータ.
+ * @note	UART受信バッファから１バイトデータを取り出す.
  */
 int UART_getchar( void )
 {
@@ -197,9 +193,9 @@ int UART_getchar( void )
 }
 
 /**************************************************************************//**
- * @brief	UARTに１バイト出力する
- * @param	c		[in]出力するデータ
- * @return	出力したデータ
+ * @brief	UARTに１バイト出力する.
+ * @param[in]	c	出力するデータ.
+ * @return	出力したデータ.
  */
 int UART_putchar( char c )
 {
@@ -211,9 +207,9 @@ int UART_putchar( char c )
 
 /**************************************************************************//**
  * @brief	UARTに引数ptrの文字列を出力する
- * @param	ptr		[in]出力する文字列
- * @return	0		出力成功
- * @return	-1		エラー
+ * @param[in]	ptr	出力する文字列
+ * @retval	0		出力成功
+ * @retval	-1		エラー
  * @note	文字列終端を除く文字列を出力する
  */
 int UART_putstr( char *ptr )
@@ -231,9 +227,9 @@ int UART_putstr( char *ptr )
 
 /**************************************************************************//**
  * @brief	UARTに引数ptrの文字列を出力する
- * @param	ptr		[in]出力する文字列
- * @return	0		出力成功
- * @return	-1		エラー
+ * @param[in]	ptr	出力する文字列
+ * @retval	0		出力成功
+ * @retval	-1		エラー
  * @note	文字列終端の\0は改行コードに変換して出力する
  */
 int UART_puts( char *ptr )

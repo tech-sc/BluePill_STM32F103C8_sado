@@ -1,8 +1,8 @@
 /**
  * @file  TIMER.c
- * @brief タイマコントローラへの制御API.
+ * @brief タイマコントローラの制御API.
  * 
- * タイマコントローラへの制御APIを提供する.
+ * タイマコントローラの制御APIを提供する.
  * 
  * @author      Teru
  * @date        2019.06.27
@@ -13,48 +13,48 @@
  * 
  * @copyright   2019 Emb-se.com.
  */
-/**
- * @mainpage
- * テンプレート・トップページ
- * 
- * @ref TIMER_title
- */
-/**
- * @page TIMER_title タイマライブラリ
- *
- * @section TIMER_api API一覧
- * | API名              | 機能       |
- * |:------------------ |:---------- |
- * | TIMER_init()       | タイマ初期設定 |
- * | TIMER_setCompReg() | コンペアマッチ値セット |
- *
- * @section TIMER_usage 使用方法
- * - 予め一度だけ TIMER_init() を呼び出す。
- */
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
 #include "stm32_assert.h"
-//#include "stm32f1xx_hal.h"
-//#include "stm32f1xx_hal_tim.h"
 #include "stm32f1xx_ll_tim.h"
 
+/**
+ * @page PAGE_TIMER タイマコントローラ制御.
+ *
+ * @section SEC1_TIMER タイマコントローラ制御API.
+ * | APIs              | 機能名称    |
+ * |:------------------ |:---------- |
+ * | TIMER_init()       | タイマコントローラの初期設定 |
+ * | TIMER_setCompReg() | コンペアマッチ値セット |
+ *
+ * @section TIMER_usage 使用方法.
+ * - 予め一度だけ TIMER_init() を呼び出す.
+ */
+/**
+ * @addtogroup GROUP_TIMER タイマコントローラ制御.
+ * @brief タイマコントローラ制御APIを提供する.<br>
+ * @{
+ */
 
 /**
- * @brief タイマ初期設定
+ * @brief タイマコントローラの初期設定.
  */
 extern void TIMER_init( void );
 
 /**
- * @brief コンペアマッチ値セット
+ * @brief コンペアマッチ値セット.
  */
 #define TIMER_setCompReg( val )		LL_TIM_OC_SetCompareCH1(TIM4, val)
 #define TIMER_getTick()				LL_TIM_GetCounter(TIM4)
 
 
 /**
- * @brief TIM4 割込みハンドラ
+ * @brief TIM4 割込みハンドラ.
  */
 extern void TIM4_IRQHandler(void);
 
+/**
+ * @} end of addtogroup
+ */
 #endif

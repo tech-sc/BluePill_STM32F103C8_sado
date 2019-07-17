@@ -1,6 +1,6 @@
 /**************************************************************************//**
  * @file	UART.h
- * @brief RS232Cレベル変換向けUART制御API
+ * @brief RS232Cレベル変換向けUART制御API.
  *
  * @author  Teru
  * @date    2014/01/12
@@ -17,27 +17,33 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-/**************************************************************************//**
- * @brief	定数定義
+/**
+ * @page PAGE_UART UART制御.
+ *
+ * @section SEC1_UART UART制御API.
+ * |APIs     |機能名称|
+ * |:--------|:------ |
+ * |UART_init() | UART初期設定 |
+ * |UART_setMode() | Text/Binaryモード設定 |
+ * |UART_getMode() | モード(Text/Binary)取得 |
+ * |UART_getchar() | 一文字出力 |
+ * |UART_putchar() | 一文字入力 |
+ * |UART_puts() | 文字列改行付き出力 |
+ * |UART_putstr() | 文字列出力 |
  */
-#define CR_CODE				'\r'		/* 改行コード */
-#define LF_CODE				'\n'		/* 改行コード */
-
-
-/**************************************************************************//**
- * @brief	変数定義
+/**
+ * @addtogroup GROUP_UART UART制御.
+ * @brief UART制御APIを提供する.<br>
+ * @{
  */
-/** シリアル受信セマフォ */
-extern xSemaphoreHandle	UART_RxSemaph;
 
-/** 通信モード */
-#define ASCII_MODE			0
-#define BINARY_MODE			1
+#define CR_CODE				'\r'
+#define LF_CODE				'\n'
+
+#define ASCII_MODE			0		/**< Text mode */
+#define BINARY_MODE			1		/**< Binary mode */
 
 
-/**************************************************************************//**
- * @brief	関数定義
- */
 extern int  UART_init( void );
 extern int  UART_setMode( uint16_t mode );
 extern uint16_t  UART_getMode( void );
@@ -46,4 +52,7 @@ extern int  UART_putchar( char c );
 extern int  UART_puts( char *ptr );
 extern int  UART_putstr( char *ptr );
 
+/**
+ * @} end of addtogroup
+ */
 #endif /*_UART_H_*/
