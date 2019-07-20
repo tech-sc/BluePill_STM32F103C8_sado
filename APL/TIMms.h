@@ -15,12 +15,6 @@
  * @copyright   2019 Emb-se.com.
  */
 /**
- * @mainpage
- * テンプレート・トップページ
- * 
- * @ref TIMER_title
- */
-/**
  * @page TIMER_title タイマライブラリ
  *
  * @section TIMER_api API一覧

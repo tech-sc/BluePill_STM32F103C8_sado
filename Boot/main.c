@@ -3,17 +3,20 @@
  * @brief   STM32F103C8 BluePill
  *
  * @mainpage STM32F103-BluePill基板向けプロジェクト
+ *
  * @brief   組込みシステム技術会合用プロジェクトである.<br>
  *
  * @details STM32CubeF1ライブラリを使用して実装する.<br>
  *
  * @par 変更履歴:
- *	Rev0.01　2019/06/16　テンプレート作成<br>
+ *	Rev0.01　2019/06/16　テンプレート作成
  * @par Copyright
- *	2014-19 Emb-se.com All rights reserved.
+ *	2014-19 Emb-se.com
  */
-#include "stm32f1xx.h"
-#include "stm32f1xx_hal.h"
+#include "stm32f1xx_ll_rcc.h"
+#include "stm32f1xx_ll_bus.h"
+#include "stm32f1xx_ll_system.h"
+#include "stm32f1xx_ll_cortex.h"
 #include "BSP_LED.h"
 #include "ExtLED.h"
 #include "ExtSW.h"
@@ -26,8 +29,11 @@
  */
 static void BSP_init(void)
 {
-//	__HAL_RCC_AFIO_CLK_ENABLE();
-	__HAL_RCC_PWR_CLK_ENABLE();
+	/* 使用する機能で有効にしている */
+	//LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
+	/* RTCを有効にする際に必要 */
+	//LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+
 	/* LEDとTACT-SWの初期設定 */
 	BSP_LED_init();
 }
@@ -44,46 +50,40 @@ void Error_Handler(void)
 /**
  * @brief System Clock Configuration
  *
- * @detail HSE=8MHz、HSI=32.768KHz、APB1-PCLK=12MHz(for MCP23017(I2C1))、APB1-CLK=24MHz
+ * @detail HSE=8MHz、APB1-PCLK=12MHz(for MCP23017(I2C1))、APB1-TCLK=24MHz
  *         SYSTICK, APB2-PCLK, APB2-CLK, HCLK, AHB=48MHz
  * @retval None
  */
 static void SystemClock_Config(void)
 {
-	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-	RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+	LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
 
-	/**Initializes the CPU, AHB and APB busses clocks 
-	*/
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-	RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+	if(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_1)
+	{
 		Error_Handler();
 	}
-	/**Initializes the CPU, AHB and APB busses clocks 
-	*/
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-								|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+	LL_RCC_HSE_Enable();
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) {
-		Error_Handler();
-	}
-	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC;
-	PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
-	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
-		Error_Handler();
-	}
+	/* Wait till HSE is ready */
+	while(LL_RCC_HSE_IsReady() != 1);
+
+	LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE_DIV_1, LL_RCC_PLL_MUL_6);
+	LL_RCC_PLL_Enable();
+
+	/* Wait till PLL is ready */
+	while(LL_RCC_PLL_IsReady() != 1);
+
+	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+	LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_4);
+	LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
+	LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+
+	/* Wait till System clock is ready */
+	while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL);
+
+	LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+	//LL_Init1msTick(48000000);
+	//LL_SetSystemCoreClock(48000000);
 }
 
 /************************************************************************************//**
@@ -102,6 +102,5 @@ void main( void )
 	apl_init();
 
 	osKernel_start();
-	//Reset->LED ON(2.4sec)
-	for(;;);
+	while(1);
 }

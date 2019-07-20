@@ -17,17 +17,17 @@
 #include "stm32f1xx_hal.h"
 
 /**
- * @page PAGE_ExtSW 外部回路基板ExtSW制御.
+ * @page PAGE_ExtSW 外部回路基板SW制御.
  *
- * @section SEC1_ExtSW 外部回路基板ExtSW制御API.
+ * @section SEC1_ExtSW 外部回路基板SW制御API.
  * |APIs     |機能名称|
  * |:--------|:------ |
- * |ExtSW_init() | 外部回路基板ExtSWの初期設定 |
+ * |ExtSW_init() | 外部SWの初期設定 |
  */
 /**
- * @addtogroup GROUP_ExtSW 外部回路基板ExtSW制御.
- * @brief 外部回路基板ExtSW制御APIを提供する。<br>
- * @details ExtSWはプルアップ接続される。<br>
+ * @addtogroup GROUP_ExtSW 外部回路基板SW制御.
+ * @brief 外部回路基板SW制御APIを提供する.<br>
+ * @details ExtSWはプルアップ接続される.<br>
  * @{
  */
 
@@ -36,25 +36,16 @@
 #define EXTI9_5_PRIORITY	5
 
 /**
- * @brief 外部回路基板SWの初期設定.
- *
- * ExtSW1ポートはプルアップで初期設定する。
- * @param なし
- * @return なし
+ * @brief 外部スイッチの初期設定.
  */
 extern void ExtSW_init(void);
 
 /**
  * @brief SW1割込み処理.
- *
- * 立下り(active)または立上がり(inactive)エッジ割込みを処理する.
- * @param なし.
- * @return なし.
  */
 extern void ExtSW1_interrupt(void);
 
-
-#endif // _ExtSW_H_
 /**
  * @} end of addtogroup
  */
+#endif // _ExtSW_H_

@@ -11,36 +11,46 @@
  * @copyright 2018 Emb-se.com. All rights reserved.
  */
 /**
- * @addtogroup GROUP_ExtLED 外部回路基板LED制御.
+ * @addtogroup GROUP_ExtLED
  * @{
  */
 #include "ExtLED.h"
 
 /**
- * @brief LEDの初期設定
+ * @brief 外部LEDの初期設定.
  *
- * LEDポートはプルアップで初期設定後、inactive(1)で初期化する。
- * @param なし
- * @return なし
+ * LED1,LED2はプルアップ設定後、inactive(1)で初期化する.
+ * @param なし.
+ * @return なし.
  */
 void ExtLED_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
 	/* GPIO Ports Clock Enable */
-	if( __HAL_RCC_GPIOA_IS_CLK_DISABLED() ) {
-		__HAL_RCC_GPIOA_CLK_ENABLE();
+	if( __HAL_RCC_GPIOB_IS_CLK_DISABLED() ) {
+		__HAL_RCC_GPIOB_CLK_ENABLE();
 	}
 
-	/* Initialize GPIO pin Output Level : High */
-	HAL_GPIO_WritePin( ExtLED1_POPT, ExtLED1_PIN, GPIO_PIN_SET );
+	/** @li ExtLED1初期設定 */
+	ExtLED1_turnOFF();
 
 	/* Configure GPIO pin */
 	GPIO_InitStruct.Pin   = ExtLED1_PIN;
 	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull  = GPIO_PULLUP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init( ExtLED1_POPT, &GPIO_InitStruct );
+
+	/** @li ExtLED2初期設定 */
+	ExtLED2_turnOFF();
+
+	/* Configure GPIO pin */
+	GPIO_InitStruct.Pin   = ExtLED2_PIN;
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull  = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init( ExtLED2_POPT, &GPIO_InitStruct );
 }
 
 /**
