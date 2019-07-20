@@ -15,12 +15,6 @@
  * @copyright   2019 Emb-se.com.
  */
 /**
- * @mainpage
- * テンプレート・トップページ
- * 
- * @ref TIMER_title
- */
-/**
  * @page TIMER_title タイマライブラリ
  *
  * @section TIMER_api API一覧
@@ -36,6 +30,7 @@
 #include "TIMER.h"
 #include "os.h"
 #include "TIMms.h"
+#include "ExtLED.h"		//計測用
 
 /** 内部管理データ */
 TIMms_t     *TIMms_TopReq;
@@ -177,6 +172,11 @@ void TIMms_expire( int over )
     TIMms_t     **exp;
     TIMCNT_t    now_tick, min_tick;
 	int64_t		temp_tick;
+
+	if( over ){
+		// 計測用
+		ExtLED1_toggle();
+	}
 
     dispatch  = pdFALSE;
 	min_tick = (TIMCNT_t)-1;	//set MAX
