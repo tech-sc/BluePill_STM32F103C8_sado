@@ -180,11 +180,6 @@ void TIMms_expire( int over )
 		ExtLED1_toggle();
 	}
 
-	if( over ){
-		// Œv‘ª—p
-		ExtLED1_toggle();
-	}
-
     dispatch  = pdFALSE;
 	min_tick = (TIMCNT_t)-1;	//set MAX
 	now_tick = TIMms_getTick();
