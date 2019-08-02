@@ -86,11 +86,7 @@ void PVD_IRQHandler(void)
  */
 void EXTI9_5_IRQHandler(void)
 {
-	/* EXTI line interrupt detected */
-	if( __HAL_GPIO_EXTI_GET_IT(ExtSW1_PIN) ) {
-		__HAL_GPIO_EXTI_CLEAR_IT( ExtSW1_PIN );
-		ExtSW1_interrupt();
-	}
+	ExtSW1_handler();
 }
 
 /**

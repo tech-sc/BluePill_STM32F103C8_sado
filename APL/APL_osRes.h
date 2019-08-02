@@ -6,11 +6,13 @@ enum {
 	TMRSVC_TASKID,
 	SHELL_TASKID,
 	TIMms_TASKID,
+	LOG_TASKID,
 	APL_INITTASKID,
 	MAX_TASKNUM,
 };
 enum {
 	TMRSVC_QUEID = 0,
+	LOG_QUEID,
 	MAX_QUENUM,
 };
 enum {
@@ -34,15 +36,19 @@ enum {
 #define	osTMRSVC_STACKSZ	256
 #define	shellTASK_STACKSZ	256
 #define	TIMmsTASK_STACKSZ	256
+#define	LOGTASK_STACKSZ		256
 #define	APLinitTASK_STACKSZ	256
 #define TOTAL_STACKSZ		( osIDLE_STACKSZ + osTMRSVC_STACKSZ \
-                            + shellTASK_STACKSZ \
-                            + TIMmsTASK_STACKSZ \
+							+ shellTASK_STACKSZ \
+							+ TIMmsTASK_STACKSZ \
+							+ LOGTASK_STACKSZ \
 							+ APLinitTASK_STACKSZ )
 
 // キューのコンテンツ・メモリサイズ
 #define	osTMRSVC_QUESZ		( 12*10+8 )
-#define TOTAL_QUESZ			( osTMRSVC_QUESZ )
+#define	LOG_QUESZ			( 28*10+8 )
+#define TOTAL_QUESZ			( osTMRSVC_QUESZ \
+							+ LOG_QUESZ )
 
 // OSヒープサイズ
 #define osHEAP_SZ			( TOTAL_MNGSZ			\
@@ -51,6 +57,7 @@ enum {
 
 #define TIMmsTASK_PRI		(configMAX_PRIORITIES -1)
 #define shellTASK_PRI		(configMAX_PRIORITIES -2)
+#define LOGTASK_PRI			(configMAX_PRIORITIES -4)
 #define APLinitTASK_PRI		(configMAX_PRIORITIES -4)
 
 

@@ -53,9 +53,13 @@ void ExtSW_init(void)
  * @param ‚È‚µ.
  * @return ‚È‚µ.
  */
-void ExtSW1_interrupt(void)
+inline void ExtSW1_handler(void)
 {
-	ExtLED1_toggle();
+	/* EXTI line interrupt detected */
+	if( __HAL_GPIO_EXTI_GET_IT(ExtSW1_PIN) ) {
+		__HAL_GPIO_EXTI_CLEAR_IT( ExtSW1_PIN );
+		ExtLED1_toggle();
+	}
 }
 
 /**
