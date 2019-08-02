@@ -15,6 +15,7 @@
 
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
+#include "ExtLED.h"
 
 /**
  * @page PAGE_ExtSW ŠO•”‰ñ˜HŠî”ÂSW§Œä.
@@ -43,8 +44,7 @@ extern void ExtSW_init(void);
 /**
  * @brief SW1Š„‚İˆ—.
  */
-extern void ExtSW1_interrupt(void);
-
+extern void ExtSW1_handler(void);
 /**
  * @} end of addtogroup
  */

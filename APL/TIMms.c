@@ -238,7 +238,7 @@ void TIMms_task( void *arg )
 	TIMms_t 	**exp, *p;
 
 	while( 1 ){
-		osMutex_take( TIMms_ExpireMutex, portMAX_DELAY );
+		osMutex_take( TIMms_ExpireMutex, osMAX_TIME );
 
 		if( TIMms_TopExpire != NULL ){
 			exp = &TIMms_TopExpire;

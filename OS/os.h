@@ -13,13 +13,14 @@
 #include "timers.h"
 
 #define osKernel_start			vTaskStartScheduler
-#define osEnterCritical         portENTER_CRITICAL
-#define osExitCritical          portEXIT_CRITICAL
+#define osEnterCritical			portENTER_CRITICAL
+#define osExitCritical			portEXIT_CRITICAL
 
 #define osTask_create			xTaskCreate
 
 #define osQue_create			xQueueCreate
 #define osQue_send				xQueueSend
+#define osQue_peek				xQueuePeek
 #define osQue_receive			xQueueReceive
 
 #define osMutex_create			vSemaphoreCreateBinary
@@ -30,8 +31,9 @@
 #define osMem_malloc			pvPortMalloc
 #define osMem_free				pvPortFree
 
-typedef xTaskHandle			osTaskHandle_t;
+typedef xTaskHandle				osTaskHandle_t;
 typedef xQueueHandle			osQueHandle_t;
 typedef xSemaphoreHandle		osMutexHandle_t;
 
+#define osMAX_TIME				portMAX_DELAY
 #endif //_OS_H_
