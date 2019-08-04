@@ -1,20 +1,21 @@
 /**
- * @file  TIMER.c
- * @brief タイマコントローラの制御API.
+ * @file  TIMER_ms.h
+ * @brief ミリ秒タイマコントローラの制御API.
  * 
- * タイマコントローラの制御APIを提供する.
+ * ミリ秒タイマコントローラの制御APIを提供する.
  * 
  * @author      Teru
- * @date        2019.06.27
- * @version     Rev0.01
+ * @date        2019/08/04
+ * @version     Rev0.10
  * 
  * @par 変更履歴:
- * - Rev0.01: 2019.06.27: 新規作成
+ * - Rev0.01: 2019/06/27: 新規作成
+ * - Rev0.10: 2019/08/04: 機能名（タイマ→ミリ秒タイマ）変更
  * 
  * @copyright   2019 Emb-se.com.
  */
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef _TIMER_MS_H_
+#define _TIMER_MS_H_
 
 #include "stm32_assert.h"
 #include "stm32f1xx_ll_tim.h"
@@ -37,16 +38,21 @@
  * @{
  */
 
+/// ミリ秒タイマコントローラ
+#define TIMER_MS_DEV					TIM4
+/// ミリ秒タイマコントローラIRQn
+#define TIMER_MS_IRQ					TIM4_IRQn
+
 /**
  * @brief タイマコントローラの初期設定.
  */
-extern void TIMER_init( void );
+extern void TIMER_ms_init( void );
 
 /**
  * @brief コンペアマッチ値セット.
  */
-#define TIMER_setCompReg( val )		LL_TIM_OC_SetCompareCH1(TIM4, val)
-#define TIMER_getTick()				LL_TIM_GetCounter(TIM4)
+#define TIMER_ms_setCompReg( val )		LL_TIM_OC_SetCompareCH1( TIMER_MS_DEV, val )
+#define TIMER_ms_getTick()				LL_TIM_GetCounter( TIMER_MS_DEV )
 
 
 /**
@@ -57,4 +63,4 @@ extern void TIM4_IRQHandler(void);
 /**
  * @} end of addtogroup
  */
-#endif
+#endif //_TIMER_MS_H_
