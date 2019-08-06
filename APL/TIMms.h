@@ -71,18 +71,15 @@ enum TIMms_OPTCD {
 /// tick→ミリ秒変換. 1TICK=0.25msec
 #define TICK_TO_MSEC(tick)		(int32_t)(tick / 4)
 
-/// tick値取得API
-#define TIMms_getTick			TIMER_getTick
-
 /**
  * @brief 初期設定API
  */
 extern void TIMms_initTimer( void );
 
 /**
- * @brief 次回発火TICKセット
+ * @brief tick値取得API
  */
-extern void TIMms_setNextExpire( TIMCNT_t tick );
+extern uint32_t TIMms_getTick( void );
 
 /**
  * @brief タイマ要求API
@@ -98,11 +95,6 @@ extern void *TIMms_cancelTimer( TIMms_t *handle );
  * @brief タイマ割込みハンドラからコールされる発火処理
  */
 extern void TIMms_expire( int over );
-
-/**
- * @brief タイマ発火処理タスク
- */
-extern void TIMms_task( void *arg );
 
 /**
  * @} end of addtogroup

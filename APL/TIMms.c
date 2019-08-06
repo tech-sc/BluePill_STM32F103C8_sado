@@ -37,6 +37,49 @@ static TIMCNT_t	TIMms_NextExpire;
 /// タイマ発火タスクを起床するための同期化変数
 static osMutexHandle_t 	TIMms_ExpireMutex;
 
+/// パワーオンからの経過tick
+static union {
+	struct {
+		TIMCNT_t	lo;
+		TIMCNT_t	hi;
+	}tick_w;
+	uint32_t	tick_l;
+} TIMms_Tick;
+
+
+/**
+ * @brief ミリ秒タイマ発火処理タスク.
+ * @param[in]	arg  未使用.
+ */
+static void TIMms_task( void *arg )
+{
+	TIMms_t 	**exp, *p;
+
+	while( 1 ){
+		osMutex_take( TIMms_ExpireMutex, osMAX_TIME );
+
+		if( TIMms_TopExpire != NULL ){
+			exp = &TIMms_TopExpire;
+			while( *exp != NULL ) {
+				p = *exp;
+				*exp = p->next_list;
+				(p->expire_cb)( p );
+			}
+		}
+	}
+}
+
+/**
+ * @brief 次回発火TICK値セット.
+ * @param[in] tick	次発火TICK値.
+ */
+static void TIMms_setNextExpire( TIMCNT_t tick )
+{
+	/* コンペアマッチレジスタを変更する. */
+	TIMER_ms_setCompReg( tick );
+
+	TIMms_NextExpire = tick;
+}
 
 /**
  * @brief ミリ秒タイマ機能の初期設定API
@@ -52,6 +95,7 @@ void TIMms_initTimer( void )
 	TIMER_ms_init();
 
 	/* 内部管理データ初期化 */
+	TIMms_Tick.tick_l = 0;
 	TIMms_TopReq	 = NULL;
 	TIMms_TailReq	 = NULL;
 	TIMms_TopExpire  = NULL;
@@ -68,15 +112,13 @@ void TIMms_initTimer( void )
 }
 
 /**
- * @brief 次回発火TICK値セット.
- * @param[in] tick	次発火TICK値.
+ * @brief tick値取得API
+ * @return	パラメータエラー.
  */
-static void TIMms_setNextExpire( TIMCNT_t tick )
+uint32_t TIMms_getTick( void )
 {
-	/* コンペアマッチレジスタを変更する. */
-	TIMER_ms_setCompReg( tick );
-
-	TIMms_NextExpire = tick;
+	TIMms_Tick.tick_w.lo = TIMER_ms_getTick();
+	return TIMms_Tick.tick_l;
 }
 
 /**
@@ -176,6 +218,7 @@ void TIMER_ms_expire( int over )
 	int32_t		temp_tick;
 
 	if( over ){
+		TIMms_Tick.tick_w.hi ++;
 		// 計測用
 		ExtLED1_toggle();
 	}
@@ -226,28 +269,6 @@ void TIMER_ms_expire( int over )
 		/* タスクを起床する */
 		osMutex_giveISR( TIMms_ExpireMutex, &dispatch );
 		portEND_SWITCHING_ISR( dispatch );
-	}
-}
-
-/**
- * @brief ミリ秒タイマ発火処理タスク.
- * @param[in]	arg  未使用.
- */
-void TIMms_task( void *arg )
-{
-	TIMms_t 	**exp, *p;
-
-	while( 1 ){
-		osMutex_take( TIMms_ExpireMutex, osMAX_TIME );
-
-		if( TIMms_TopExpire != NULL ){
-			exp = &TIMms_TopExpire;
-			while( *exp != NULL ) {
-				p = *exp;
-				*exp = p->next_list;
-				(p->expire_cb)( p );
-			}
-		}
 	}
 }
 
