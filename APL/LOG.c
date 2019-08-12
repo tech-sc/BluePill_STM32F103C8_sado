@@ -19,6 +19,7 @@
  */
 #include "os.h"
 #include "LOG.h"
+#include "TIMER_ms.h"
 
 /**
  * @brief TLV-TAGÉfÅ[É^å^.
