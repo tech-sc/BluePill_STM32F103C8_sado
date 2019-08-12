@@ -2121,6 +2121,9 @@
       <name>$PROJ_DIR$\..\..\APL\APL_osRes.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\APL\LOG.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\APL\shell.c</name>
     </file>
     <file>

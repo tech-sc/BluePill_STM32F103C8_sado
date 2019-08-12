@@ -56,7 +56,6 @@ typedef struct LOG_TLV_t {
 	/// TAG
 	LOG_TAG_t	tag[4];
 	/// LENGTHは、固定長のため実装しない.
-	;
 	/// VALUE
 	LOG_VAL_t	val[4];
 }LOG_TLV_t;
@@ -86,8 +85,12 @@ static char	*LOG_STR[MAX_LOG_TYPE] = {
 	"INF: ",
 	"WRN: ",
 	"ERR: ",
-	NULL
 };
+
+/**
+ * @brief ログ出力レベル.
+ */
+uint8_t		LOG_level = LOG_DEBUG;
 
 /**
  * @brief ログキューハンドル.
@@ -100,7 +103,7 @@ osQueHandle_t	hLOG_MsgQue;
  */
 static void LOG_task( void *arg )
 {
-	LOG_DATA_t	msg;
+	LOG_DATA_t	msg = {0};;
 
 	while(1) {
 		if( osQue_receive( hLOG_MsgQue, &msg, osMAX_TIME ) == 0 ){
@@ -112,11 +115,13 @@ static void LOG_task( void *arg )
 }
 
 /**
- * @brief 初期設定API
+ * @brief ログ初期設定API
  *
- * ログ初期設定及びログ出力タスクの生成
+ * ログ初期設定及びログ出力タスクの生成.
+ * @param[in]	level ログ出力レベル.指定したログタイプ以上をロギングする.
+ * @ref LOG_write 関数.
  */
-void LOG_init( void )
+void LOG_init( LOG_TYPE_t level )
 {
 	osTaskHandle_t	handle;
 	int		retv;
@@ -129,17 +134,13 @@ void LOG_init( void )
 	retv = osTask_create( &LOG_task, "LOG", LOGTASK_STACKSZ/4,
 						NULL, LOGTASK_PRI | portPRIVILEGE_BIT, &handle );
 	configASSERT( retv == pdPASS );
+
+	/* ログ出力レベルをセットする(デフォルト:LOG_DEBUGレベル). */
+	if( level < MAX_LOG_TYPE ) {
+		LOG_level = level;
+	}
 }
 
-
-/**
- * @brief ログ初期設定API
- * @param[in]	level ログ出力レベル.指定したログタイプ以上をロギングする.
- * @ref LOG_write 関数.
- */
-void LOG_init( LOG_TYPE_t level )
-{
-}
 
 /**
  * @brief ログ書き込みAPI
@@ -173,14 +174,16 @@ void LOG_init( LOG_TYPE_t level )
  * @pre 	e.g.1) LOG_write( LOG_INFO,  __LINE__, 2, TAG_DEC, value1 );<br>
  *          e.g.2) LOG_write( LOG_ERROR, __LINE__, 4, TAG_STR, STRID_PARAM, TAG_HEX, value2 );<br>
  */
-int LOG_write( LOG_TYPE_t type, int line, LOG_FID_t fn_id, int argc, ... )
+int LOG_write( LOG_TYPE_t type, int line, uint16_t fn_id, int argc, ... )
 {
 	LOG_TAG_t	tag;
-	LOG_VAL_t	val;
+	uint32_t	val;
 	va_list		ap;
-	LOG_DATA_t	msg;
+	LOG_DATA_t	msg = {0};
 	int		i, idx, retv = 0;
+//	TIMCNT_t	tick;
 
+//	tick = TIMER_ms_getTick();
 	if( (argc & 0x01)||(argc > 8)  ) {
 		return -1;
 	}
@@ -189,13 +192,13 @@ int LOG_write( LOG_TYPE_t type, int line, LOG_FID_t fn_id, int argc, ... )
 	idx = 0;
 	for( i = 0; i < argc /2; i++ ) {
 		tag = (LOG_TAG_t)va_arg( ap, int );
-		val = va_arg( ap, LOG_VAL_t );
+		val = va_arg( ap, uint32_t );
 		switch( tag ) {
 		case TAG_STR:
 		case TAG_DEC:
 		case TAG_HEX:
-			msg.tag[idx] = tag;
-			msg.val[idx] = val;
+			msg.tlv.tag[idx] = tag;
+			msg.tlv.val[idx].dword = val;
 			idx++;
 			break;
 		default:
