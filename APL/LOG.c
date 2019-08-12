@@ -21,26 +21,78 @@
 #include "LOG.h"
 
 /**
+ * @brief TLV-TAGデータ型.
+ */
+typedef enum LOG_TAG_t {
+	/// 終端(これ以降にデータなし)
+	TAG_TERM = 0,
+	/// 10進数出力TAG：データ長32bit
+	TAG_DEC,
+	/// 16進数出力TAG：データ長32bit
+	TAG_HEX,
+	/// 文字出力TAG(MAX4文字.4文字未満は\0でターミネートする事)
+	TAG_CHAR,
+	/// 文字列出力TAG：データ長32bitポインタ.
+	TAG_STR,
+}LOG_TAG_t;
+
+/**
+ * @brief TLV-VALUEデータ型.
+ * 文字列コード/10進数/16進数 出力データをセットする.
+ */
+typedef union LOG_VAL_t {
+	uint8_t		byte[4];
+	uint32_t	dword;
+	/// 文字(MAX４文字.\0でターミネートする)
+	char		chr[4];
+	/// 文字列(auto変数不可)
+	char* const	ptr;
+}LOG_VAL_t;
+
+/**
+ * @brief TLVフォーマット型.
+ */
+typedef struct LOG_TLV_t {
+	/// TAG
+	LOG_TAG_t	tag[4];
+	/// LENGTHは、固定長のため実装しない.
+	;
+	/// VALUE
+	LOG_VAL_t	val[4];
+}LOG_TLV_t;
+
+/**
  * @brief ログデータ型.
  */
 typedef struct LOG_DATA_t {
 	/// ログタイプ.
 	uint16_t	type;
-	/// 機能コード.
+	/// 機能コード.(呼び出し(APL)側で定義する事)
 	uint16_t	fn_id;
 	/// 行番号.
 	uint16_t	line;
-	/// T1-TAG
-	uint8_t		tag[4];
-	/// T1-VALUE
-	LOG_VAL_t	val[4];
+	/// ログデータ(TLV)
+	LOG_TLV_t	tlv;
 }LOG_DATA_t;
+
+
+/**
+ * @brief ログ出力文字列.
+ * @ref LOG_TYPE_t
+ */
+static char	*LOG_STR[MAX_LOG_TYPE] = {
+	"DBG: ",
+	"PRM: ",
+	"INF: ",
+	"WRN: ",
+	"ERR: ",
+	NULL
+};
 
 /**
  * @brief ログキューハンドル.
  */
 osQueHandle_t	hLOG_MsgQue;
-
 
 /**
  * @brief ログ出力タスク.
@@ -79,22 +131,45 @@ void LOG_init( void )
 	configASSERT( retv == pdPASS );
 }
 
+
 /**
- * @brief ログ書き込み.
+ * @brief ログ初期設定API
+ * @param[in]	level ログ出力レベル.指定したログタイプ以上をロギングする.
+ * @ref LOG_write 関数.
+ */
+void LOG_init( LOG_TYPE_t level )
+{
+}
+
+/**
+ * @brief ログ書き込みAPI
  *
- * 可変長引数にT1フォーマットのTag、Valueを１ペアで指定してログ出力データを渡す.
- * | T1-TAG     | 機能                |データ長       |
- * |:---------- |:------------------- |:------------- |
- * | TAG_STR    | 文字列出力データTAG | データ長32bitポインタ |
- * | TAG_DEC    | 10進数出力データTAG | データ長32bit |
- * | TAG_HEX    | 16進数出力データTAG | データ長32bit |
+ * ログタイプを指定してロギングするデータを渡す.
+ * | Log Type    | 用途           | 出力レベル |
+ * |:----------- |:-------------- |:---------- |
+ * | LOG_DEBUG   | デバッグ       | 低い       |
+ * | LOG_PARAM   | パラメータ情報 |  ↑        |
+ * | LOG_INFO    | その他情報     |  ｜        |
+ * | LOG_WARNING | ワーニング     |  ↓        |
+ * | LOG_ERROR   | エラー         | 高い       |
+ *   ※ログ出力レベルはLOG_init()で指定して抑止可能.
+ *
+ * 可変長引数にTLVフォーマットのTag、Valueを１ペアで指定してログ出力データを渡す.
+ * | TLV Tag   | 機能         | データ長      |
+ * |:--------- |:------------ |:------------- |
+ * | TAG_DEC   | 10進数出力   | データ長32bit |
+ * | TAG_HEX   | 16進数出力   | データ長32bit |
+ * | TAG_CHAR  | MAX4文字出力 | データ長4byte |
+ * | TAG_STR   | 文字列出力   | データ長32bitポインタ |
+ * | TAG_TERM  | 終端TAG      | これ以降にデータなし |
+ *
  * @param[in]	type    ログタイプ.
  * @param[in]	line    行番号.
- * @param[in]	fn_id   機能コード.
- * @param[in]	argc    arg_list数(0/2/4/6/8)
+ * @param[in]	fn_id   機能コード.(呼び出し(APL)側で定義する事)
+ * @param[in]	argc    arg_list数.(0/2/4/6/8)
  * @param[in]	...     arg_list tag1,val1, tag2,val2, tag3,val3, tag4,val4
  * @retval	0	Success
- * @retval	-1	パラメータエラー
+ * @retval	-1	パラメータエラー.
  * @pre 	e.g.1) LOG_write( LOG_INFO,  __LINE__, 2, TAG_DEC, value1 );<br>
  *          e.g.2) LOG_write( LOG_ERROR, __LINE__, 4, TAG_STR, STRID_PARAM, TAG_HEX, value2 );<br>
  */

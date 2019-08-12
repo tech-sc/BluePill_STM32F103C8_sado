@@ -18,44 +18,35 @@
  * @{
  */
 #include <stdarg.h>
-#include "LOG_user.h"
 
 /**
- * @brief ログ T1-TAGデータ型.
- */
-typedef enum LOG_TAG_t {
-	TAG_NONE	= 0,		/**< TAGなし */
-	TAG_STR		= 0x02,		/**< 文字列出力データTAG、データ長32bitポインタ. */
-	TAG_DEC		= 0x04,		/**< 10進数出力データTAG、データ長32bit */
-	TAG_HEX		= 0x08,		/**< 16進数出力データTAG、データ長32bit */
-}LOG_TAG_t;
-
-/**
- * @brief ログ T1-VALUEデータ型.
- * 文字列コード/10進数/16進数 出力データをセットする.
- */
-typedef uint32_t	LOG_VAL_t;
-
-/**
- * @brief ログデータタイプ型.
+ * @brief ログタイプ型.
  */
 typedef enum LOG_TYPE_t {
-	LOG_DEBUG	= 1,		/**< デバッグタイプ. */
-	LOG_INFO	= 2,		/**< 情報タイプ. */
-	LOG_WARNING	= 3,		/**< ワーニングタイプ. */
-	LOG_ERROR	= 4,		/**< エラータイプ. */
+	/// デバッグタイプ.
+	LOG_DEBUG = 0,
+	/// パラメータ情報タイプ.
+	LOG_PARAM,
+	/// 情報タイプ.
+	LOG_INFO,
+	/// ワーニングタイプ.
+	LOG_WARNING,
+	/// エラータイプ.
+	LOG_ERROR,
+	/// 終端(指定不可)
+	MAX_LOG_TYPE
 }LOG_TYPE_t;
 
 
 /**
  * @brief ログ初期設定API
  */
-void LOG_init( void );
+void LOG_init( LOG_TYPE_t level );
 
 /**
- * @brief ログ書き込み.
+ * @brief ログ書き込みAPI
  */
-int LOG_write( LOG_TYPE_t type, int line, LOG_FID_t fn_id, int argc, ... );
+int LOG_write( LOG_TYPE_t type, int line, uint16_t fn_id, int argc, ... );
 
 /**
  * @} end of addtogroup
