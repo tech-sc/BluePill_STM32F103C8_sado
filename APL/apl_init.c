@@ -8,6 +8,7 @@
 #include "os.h"
 #include "TIMms.h"
 #include "ExtLED.h"
+#include "BSP_LED.h"
 #include "shell.h"
 #include "apl_init.h"
 
@@ -58,9 +59,10 @@ void apl_initTask( void *arg )
 	}
 }
 
+/**************************************************************************/
 static void tmX_expire( void *handle )
 {
 	ExtLED2_toggle();
+	BSP_LED_toggle();
 	TIMms_reqTimer( 500, &tmX_expire, handle );
-//    osMutex_give( expire_mutex );
 }

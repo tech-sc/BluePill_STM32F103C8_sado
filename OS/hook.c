@@ -22,14 +22,8 @@ void assert_failed(const char* file, int line)
  * @retval  None
  * @note    Maybe this function will be called from the Tick handler.
  */
-static uint8_t	tick_checker = 0;
 void vApplicationTickHook( void )
 {
-	tick_checker++;
-	if( tick_checker >= 50 ) {
-		tick_checker = 0;
-		BSP_LED_toggle();		// (tick=10)*50=500msec
-	}
 }
 #endif
 
