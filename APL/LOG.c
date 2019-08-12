@@ -17,35 +17,19 @@
  * @addtogroup GROUP_LOG
  * @{
  */
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 #include "os.h"
 #include "LOG.h"
-#include "TIMER_ms.h"
-
-/**
- * @brief TLV-TAGデータ型.
- */
-typedef enum LOG_TAG_t {
-	/// 終端(これ以降にデータなし)
-	TAG_TERM = 0,
-	/// 10進数出力TAG：データ長32bit
-	TAG_DEC,
-	/// 16進数出力TAG：データ長32bit
-	TAG_HEX,
-	/// 文字出力TAG(MAX4文字.4文字未満は\0でターミネートする事)
-	TAG_CHAR,
-	/// 文字列出力TAG：データ長32bitポインタ.
-	TAG_STR,
-}LOG_TAG_t;
+#include "TIMms.h"
 
 /**
  * @brief TLV-VALUEデータ型.
  * 文字列コード/10進数/16進数 出力データをセットする.
  */
 typedef union LOG_VAL_t {
-	uint8_t		byte[4];
 	uint32_t	dword;
-	/// 文字(MAX４文字.\0でターミネートする)
-	char		chr[4];
 	/// 文字列(auto変数不可)
 	char* const	ptr;
 }LOG_VAL_t;
@@ -65,6 +49,8 @@ typedef struct LOG_TLV_t {
  * @brief ログデータ型.
  */
 typedef struct LOG_DATA_t {
+	/// tick
+	uint32_t	tick;
 	/// ログタイプ.
 	uint16_t	type;
 	/// 機能コード.(呼び出し(APL)側で定義する事)
@@ -80,7 +66,7 @@ typedef struct LOG_DATA_t {
  * @brief ログ出力文字列.
  * @ref LOG_TYPE_t
  */
-static char	*LOG_STR[MAX_LOG_TYPE] = {
+static char		*LOG_STR[MAX_LOG_TYPE] = {
 	"DBG: ",
 	"PRM: ",
 	"INF: ",
@@ -91,12 +77,23 @@ static char	*LOG_STR[MAX_LOG_TYPE] = {
 /**
  * @brief ログ出力レベル.
  */
-uint8_t		LOG_level = LOG_DEBUG;
+static uint8_t		LOG_level = LOG_DEBUG;
+
+
+#define MAX_LOG_POOL		10
+
+/**
+ * @brief ログ格納バッファ.
+ */
+static LOG_DATA_t	LOG_buff[MAX_LOG_POOL];
+static int			WtPos = 0;
+static int			RdPos = 0;
 
 /**
  * @brief ログキューハンドル.
  */
 osQueHandle_t	hLOG_MsgQue;
+
 
 /**
  * @brief ログ出力タスク.
@@ -104,14 +101,18 @@ osQueHandle_t	hLOG_MsgQue;
  */
 static void LOG_task( void *arg )
 {
-	LOG_DATA_t	msg = {0};;
+	LOG_DATA_t	msg = {0};
 
 	while(1) {
 		if( osQue_receive( hLOG_MsgQue, &msg, osMAX_TIME ) == 0 ){
 			continue;
 		}
-		// ログ出力
-		;
+		// ログ保存
+		if( WtPos >= MAX_LOG_POOL ) {
+			WtPos = 0;
+		}
+		memcpy( &LOG_buff[WtPos], &msg, sizeof(LOG_DATA_t) );
+		WtPos++;
 	}
 }
 
@@ -140,6 +141,8 @@ void LOG_init( LOG_TYPE_t level )
 	if( level < MAX_LOG_TYPE ) {
 		LOG_level = level;
 	}
+	RdPos = 0;
+	WtPos = 0;
 }
 
 
@@ -161,7 +164,6 @@ void LOG_init( LOG_TYPE_t level )
  * |:--------- |:------------ |:------------- |
  * | TAG_DEC   | 10進数出力   | データ長32bit |
  * | TAG_HEX   | 16進数出力   | データ長32bit |
- * | TAG_CHAR  | MAX4文字出力 | データ長4byte |
  * | TAG_STR   | 文字列出力   | データ長32bitポインタ |
  * | TAG_TERM  | 終端TAG      | これ以降にデータなし |
  *
@@ -177,32 +179,44 @@ void LOG_init( LOG_TYPE_t level )
  */
 int LOG_write( LOG_TYPE_t type, int line, uint16_t fn_id, int argc, ... )
 {
-	LOG_TAG_t	tag;
-	uint32_t	val;
 	va_list		ap;
 	LOG_DATA_t	msg = {0};
-	int		i, idx, retv = 0;
-//	TIMCNT_t	tick;
+	int			i, idx, retv = 0;
+	bool		loop = true;
 
-//	tick = TIMER_ms_getTick();
+	if( type < LOG_level ) {
+		return 0;		// ログ抑止
+	}
+	if( type >= MAX_LOG_TYPE ) {
+		return -1;
+	}
+
+	msg.tick  = TIMms_getTick();
+	msg.type  = type;
+	msg.line  = (uint16_t)line;
+	msg.fn_id = fn_id;
+
 	if( (argc & 0x01)||(argc > 8)  ) {
 		return -1;
 	}
 	va_start( ap, argc );
 
 	idx = 0;
-	for( i = 0; i < argc /2; i++ ) {
-		tag = (LOG_TAG_t)va_arg( ap, int );
-		val = va_arg( ap, uint32_t );
-		switch( tag ) {
+	for( i = 0; (i < argc /2)&&(loop); i++ ) {
+		msg.tlv.tag[idx]       = (LOG_TAG_t)va_arg( ap, int );
+		msg.tlv.val[idx].dword = va_arg( ap, uint32_t );
+		switch( msg.tlv.tag[idx] ) {
 		case TAG_STR:
 		case TAG_DEC:
 		case TAG_HEX:
-			msg.tlv.tag[idx] = tag;
-			msg.tlv.val[idx].dword = val;
 			idx++;
 			break;
+		case TAG_TERM:
+			msg.tlv.val[idx].dword = 0;
+			loop = false;
+			break;
 		default:
+			loop = false;
 			retv = -1;
 			break;
 		}
@@ -211,6 +225,59 @@ int LOG_write( LOG_TYPE_t type, int line, uint16_t fn_id, int argc, ... )
 
 	if( retv == 0 ){
 		retv = osQue_send( hLOG_MsgQue, &msg, 0 );
+	}
+	return retv;
+}
+
+/**
+ * @brief ログ読み出しAPI
+ *
+ * ログ格納バッファからログを文字列で返す.
+ *
+ * @param[out]	str     ログを格納する文字列ポインタ.
+ * @param[in]	sz      最大文字列バッファサイズ.(byte)
+ * @retval	0	Success
+ * @retval	-1	ログデータなし.
+ */
+int LOG_read( char *str, size_t sz )
+{
+	LOG_DATA_t	*p_rd;
+	int			len, save_len, i;
+	bool		loop = true;
+	int			retv = -1;
+
+	if( RdPos >= MAX_LOG_POOL ) {
+		RdPos = 0;
+	}
+	if( RdPos != WtPos ) {
+		p_rd = &LOG_buff[RdPos];
+		len = snprintf( str, sz, "%lu %s 0x%x %d ",
+					 p_rd->tick, LOG_STR[p_rd->type], p_rd->fn_id, p_rd->line );
+		if( (len <= 0)||(len >= sz) ) {
+			return -1;
+		}
+		save_len = len;
+		for( i=0; (i < 4)&&(loop); i++ ) {
+			switch( p_rd->tlv.tag[i] ) {
+			case TAG_STR:
+				len = snprintf( str, sz -save_len, " %s", p_rd->tlv.val[i].ptr );
+				break;
+			case TAG_DEC:
+				len = snprintf( str, sz -save_len, " %ld ", p_rd->tlv.val[i].dword );
+				break;
+			case TAG_HEX:
+				len = snprintf( str, sz -save_len, " 0x%lX ", p_rd->tlv.val[i].dword );
+				break;
+			}
+			if( (len <= 0)||(len >= sz) ) {
+				loop = false;
+				break;
+			}
+		}
+		if( loop ) {
+			retv = 0;
+		}
+		RdPos++;
 	}
 	return retv;
 }

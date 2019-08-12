@@ -37,6 +37,20 @@ typedef enum LOG_TYPE_t {
 	MAX_LOG_TYPE
 }LOG_TYPE_t;
 
+/**
+ * @brief TLV-TAGデータ型.
+ */
+typedef enum LOG_TAG_t {
+	/// 終端(これ以降にデータなし)
+	TAG_TERM = 0,
+	/// 10進数出力TAG：データ長32bit
+	TAG_DEC,
+	/// 16進数出力TAG：データ長32bit
+	TAG_HEX,
+	/// 文字列出力TAG：データ長32bitポインタ.
+	TAG_STR,
+}LOG_TAG_t;
+
 
 /**
  * @brief ログ初期設定API

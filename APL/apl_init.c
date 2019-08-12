@@ -9,6 +9,7 @@
 #include "TIMms.h"
 #include "ExtLED.h"
 #include "BSP_LED.h"
+#include "LOG.h"
 #include "shell.h"
 #include "apl_init.h"
 
@@ -36,6 +37,7 @@ void apl_init( void )
 	xTaskHandle		handle;
 
 	TIMms_initTimer();
+	LOG_init( LOG_INFO );
 	shell_init();
 
     osMutex_create( expire_mutex );
@@ -62,6 +64,8 @@ void apl_initTask( void *arg )
 /**************************************************************************/
 static void tmX_expire( void *handle )
 {
+	LOG_write( LOG_DEBUG, __LINE__, 0x0010, 2, TAG_STR, "500ms Expire" );
+
 	ExtLED2_toggle();
 	BSP_LED_toggle();
 	TIMms_reqTimer( 500, &tmX_expire, handle );

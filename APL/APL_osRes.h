@@ -44,9 +44,9 @@ enum {
 							+ LOGTASK_STACKSZ \
 							+ APLinitTASK_STACKSZ )
 
-// キューのコンテンツ・メモリサイズ
+// キューのコンテンツ・メモリサイズ(コンテンツサイズ*個数)
 #define	osTMRSVC_QUESZ		( 12*10+8 )
-#define	LOG_QUESZ			( 28*10+8 )
+#define	LOG_QUESZ			( 44*10+8 )
 #define TOTAL_QUESZ			( osTMRSVC_QUESZ \
 							+ LOG_QUESZ )
 
