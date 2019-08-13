@@ -34,9 +34,9 @@ enum {
 // タスクのスタック・メモリサイズ
 #define	osIDLE_STACKSZ		256
 #define	osTMRSVC_STACKSZ	256
-#define	shellTASK_STACKSZ	256
+#define	shellTASK_STACKSZ	384
 #define	TIMmsTASK_STACKSZ	256
-#define	LOGTASK_STACKSZ		256
+#define	LOGTASK_STACKSZ		384
 #define	APLinitTASK_STACKSZ	256
 #define TOTAL_STACKSZ		( osIDLE_STACKSZ + osTMRSVC_STACKSZ \
 							+ shellTASK_STACKSZ \
@@ -44,9 +44,9 @@ enum {
 							+ LOGTASK_STACKSZ \
 							+ APLinitTASK_STACKSZ )
 
-// キューのコンテンツ・メモリサイズ
+// キューのコンテンツ・メモリサイズ(コンテンツサイズ*個数)
 #define	osTMRSVC_QUESZ		( 12*10+8 )
-#define	LOG_QUESZ			( 28*10+8 )
+#define	LOG_QUESZ			( 44*10+8 )
 #define TOTAL_QUESZ			( osTMRSVC_QUESZ \
 							+ LOG_QUESZ )
 

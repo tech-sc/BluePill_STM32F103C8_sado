@@ -19,7 +19,7 @@
  * @addtogroup GROUP_TIMms ミリ秒オーダータイマ機能.
  * @{
  */
-#include "TIMER.h"
+#include "TIMER_ms.h"
 #include "os.h"
 #include "TIMms.h"
 #include "ExtLED.h"		///計測用.
@@ -37,21 +37,66 @@ static TIMCNT_t	TIMms_NextExpire;
 /// タイマ発火タスクを起床するための同期化変数
 static osMutexHandle_t 	TIMms_ExpireMutex;
 
+/// パワーオンからの経過tick
+static union {
+	struct {
+		TIMCNT_t	lo;
+		TIMCNT_t	hi;
+	}tick_w;
+	uint32_t	tick_l;
+} TIMms_Tick;
+
 
 /**
- * @brief 初期設定API
+ * @brief ミリ秒タイマ発火処理タスク.
+ * @param[in]	arg  未使用.
+ */
+static void TIMms_task( void *arg )
+{
+	TIMms_t 	**exp, *p;
+
+	while( 1 ){
+		osMutex_take( TIMms_ExpireMutex, osMAX_TIME );
+
+		if( TIMms_TopExpire != NULL ){
+			exp = &TIMms_TopExpire;
+			while( *exp != NULL ) {
+				p = *exp;
+				*exp = p->next_list;
+				(p->expire_cb)( p );
+			}
+		}
+	}
+}
+
+/**
+ * @brief 次回発火TICK値セット.
+ * @param[in] tick	次発火TICK値.
+ */
+static void TIMms_setNextExpire( TIMCNT_t tick )
+{
+	/* コンペアマッチレジスタを変更する. */
+	TIMER_ms_setCompReg( tick );
+
+	TIMms_NextExpire = tick;
+}
+
+/**
+ * @brief ミリ秒タイマ機能の初期設定API
  *
- * タイマコントローラの初期設定及びタイマ発火タスクの生成
+ * ミリ秒タイマコントローラの初期設定及びタイマ発火タスクの生成
  */
 void TIMms_initTimer( void )
 {
 	osTaskHandle_t	handle;
 	int		retv;
 
+printf("%s\n", __FUNCTION__);
 	/* タイマ起動 */
-	TIMER_init();
+	TIMER_ms_init();
 
 	/* 内部管理データ初期化 */
+	TIMms_Tick.tick_l = 0;
 	TIMms_TopReq	 = NULL;
 	TIMms_TailReq	 = NULL;
 	TIMms_TopExpire  = NULL;
@@ -68,19 +113,17 @@ void TIMms_initTimer( void )
 }
 
 /**
- * @brief 次回発火TICK値セット.
- * @param[in] tick	次発火TICK値.
+ * @brief tick値取得API
+ * @return	パラメータエラー.
  */
-static void TIMms_setNextExpire( TIMCNT_t tick )
+uint32_t TIMms_getTick( void )
 {
-	/* コンペアマッチレジスタを変更する. */
-	TIMER_setCompReg( tick );
-
-	TIMms_NextExpire = tick;
+	TIMms_Tick.tick_w.lo = TIMER_ms_getTick();
+	return TIMms_Tick.tick_l;
 }
 
 /**
- * @brief タイマ要求API
+ * @brief ミリ秒タイマ要求API
  *
  * ミリ秒単位のタイマ要求を提供するAPI関数である.
  * 発火はコールバックにて通知する.
@@ -104,7 +147,7 @@ void *TIMms_reqTimer( int32_t time, void (*expire_cb)(void *handle), TIMms_t *p_
 	configASSERT(expire_cb != NULL);
 	configASSERT(p_req != NULL);
 
-	p_req->old_tick    = TIMms_getTick();
+	p_req->old_tick    = TIMER_ms_getTick();
 	p_req->remain_tick = MSEC_TO_TICK(time);
 	p_req->expire_cb   = expire_cb;
 	p_req->next_list   = NULL;
@@ -130,13 +173,13 @@ void *TIMms_reqTimer( int32_t time, void (*expire_cb)(void *handle), TIMms_t *p_
 
 
 /**
- * @brief タイマ取消API
+ * @brief ミリ秒タイマ取消API
  *
  * タイマ要求を取消すAPI関数である.
  * APIの使い方によっては取消と発火がすれ違う可能性があるので呼び出し側で対応すること.
  *
  * @param[in]	handle	タイマ要求を取消すタイマハンドル.
- * @retval	handle	取消が成功すると、取消したタイマハンドルを返す.
+ * @retval	!NULL	取消が成功すると、取消したタイマハンドルを返す.
  * @retval	NULL	パラメータエラー.
  *					またはエントリされてない（既に発火した）.
  * @pre 	引数のhandleはNULLでないこと.
@@ -164,10 +207,10 @@ void *TIMms_cancelTimer( TIMms_t *handle )
 }
 
 /**
- * @brief タイマ割込みハンドラからコールされる発火処理.
+ * @brief ミリ秒タイマ割込みハンドラからコールされる発火処理.
  * @param[in]	over =0/=1:カウンタOverflow.
  */
-void TIMms_expire( int over )
+void TIMER_ms_expire( int over )
 {
 	portBASE_TYPE	dispatch;
 	TIMms_t 	**pre, *p;
@@ -176,13 +219,14 @@ void TIMms_expire( int over )
 	int32_t		temp_tick;
 
 	if( over ){
+		TIMms_Tick.tick_w.hi ++;
 		// 計測用
 		ExtLED1_toggle();
 	}
 
     dispatch  = pdFALSE;
 	min_tick = (TIMCNT_t)-1;	//set MAX
-	now_tick = TIMms_getTick();
+	now_tick = TIMER_ms_getTick();
 
 	osEnterCritical();
 	exp = &TIMms_TopExpire;
@@ -226,28 +270,6 @@ void TIMms_expire( int over )
 		/* タスクを起床する */
 		osMutex_giveISR( TIMms_ExpireMutex, &dispatch );
 		portEND_SWITCHING_ISR( dispatch );
-	}
-}
-
-/**
- * @brief タイマ発火処理タスク.
- * @param[in]	arg  未使用.
- */
-void TIMms_task( void *arg )
-{
-	TIMms_t 	**exp, *p;
-
-	while( 1 ){
-		osMutex_take( TIMms_ExpireMutex, osMAX_TIME );
-
-		if( TIMms_TopExpire != NULL ){
-			exp = &TIMms_TopExpire;
-			while( *exp != NULL ) {
-				p = *exp;
-				*exp = p->next_list;
-				(p->expire_cb)( p );
-			}
-		}
 	}
 }
 

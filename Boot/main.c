@@ -22,6 +22,7 @@
 #include "ExtSW.h"
 #include "os.h"
 #include "apl_init.h"
+#include "ASSERT.h"
 
 /**
  * @brief オンボードペリフェラル初期設定
@@ -58,10 +59,7 @@ static void SystemClock_Config(void)
 {
 	LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
 
-	if(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_1)
-	{
-		Error_Handler();
-	}
+	ASSERT_nv(LL_FLASH_GetLatency() == LL_FLASH_LATENCY_1);
 	LL_RCC_HSE_Enable();
 
 	/* Wait till HSE is ready */
@@ -82,8 +80,7 @@ static void SystemClock_Config(void)
 	while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL);
 
 	LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
-	//LL_Init1msTick(48000000);
-	//LL_SetSystemCoreClock(48000000);
+	SystemCoreClock = configCPU_CLOCK_HZ;
 }
 
 /************************************************************************************//**

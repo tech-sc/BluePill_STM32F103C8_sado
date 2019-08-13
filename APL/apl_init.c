@@ -5,10 +5,12 @@
  * @date	2019/07/04
  * @author	Teru
  */
-#include "os.h"
-#include "TIMms.h"
+#include "BSP_LED.h"
 #include "ExtLED.h"
+#include "TIMms.h"
+#include "LOG.h"
 #include "shell.h"
+#include "os.h"
 #include "apl_init.h"
 
 /**************************************************************************//**
@@ -36,7 +38,9 @@ void apl_init( void )
 
 	TIMms_initTimer();
 	shell_init();
+	LOG_init( LOG_DEBUG );
 
+printf("%s\n", __FUNCTION__);
     osMutex_create( expire_mutex );
     osMutex_take( expire_mutex, portMAX_DELAY );
 
@@ -58,9 +62,12 @@ void apl_initTask( void *arg )
 	}
 }
 
+/**************************************************************************/
 static void tmX_expire( void *handle )
 {
+	LOG_write( LOG_DEBUG, __LINE__, 0x0010, 2, TAG_STR, "500ms Expire" );
+
 	ExtLED2_toggle();
+	BSP_LED_toggle();
 	TIMms_reqTimer( 500, &tmX_expire, handle );
-//    osMutex_give( expire_mutex );
 }

@@ -2108,7 +2108,10 @@
         <name>$PROJ_DIR$\..\..\APL\Driver\ExtSW.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\APL\Driver\TIMER.c</name>
+        <name>$PROJ_DIR$\..\..\APL\Driver\TIMER_ms.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\APL\Driver\TIMER_us.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\APL\Driver\UART.c</name>
@@ -2119,9 +2122,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\APL\LOG.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\LOG_user.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\APL\shell.c</name>
