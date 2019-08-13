@@ -34,9 +34,9 @@ enum {
 // タスクのスタック・メモリサイズ
 #define	osIDLE_STACKSZ		256
 #define	osTMRSVC_STACKSZ	256
-#define	shellTASK_STACKSZ	256
+#define	shellTASK_STACKSZ	384
 #define	TIMmsTASK_STACKSZ	256
-#define	LOGTASK_STACKSZ		256
+#define	LOGTASK_STACKSZ		384
 #define	APLinitTASK_STACKSZ	256
 #define TOTAL_STACKSZ		( osIDLE_STACKSZ + osTMRSVC_STACKSZ \
 							+ shellTASK_STACKSZ \

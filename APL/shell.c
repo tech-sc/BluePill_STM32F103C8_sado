@@ -118,6 +118,7 @@ void shell_init( void )
 	portBASE_TYPE	retv;
 	xTaskHandle		handle;
 
+printf("%s\n", __FUNCTION__);
 	UART_init();
 
 	shell_CoreBuff_len     = 0;
@@ -433,7 +434,7 @@ static int shell_help( int argc, char **argv )
  */
 int shell_registerCommand( SHELL_COMMAND_t *p_item )
 {
-	SHELL_COMMAND_t		*p_list;
+	SHELL_COMMAND_t		**p_list;
 
 	if( p_item == NULL ) {
 		return -1;
@@ -443,13 +444,15 @@ int shell_registerCommand( SHELL_COMMAND_t *p_item )
 		return -1;
 	}
 
-	p_list = shell_CommandTbl.pNext;
-	while( p_list != NULL ) {
-		if( strcmp( p_list->pCommand, p_item->pCommand ) > 0 ) {
+	p_item->pNext = NULL;
+	p_list = &shell_CommandTbl.pNext;
+	while( *p_list != NULL ) {
+		if( strcmp( (*p_list)->pCommand, p_item->pCommand ) > 0 ) {
+			p_item->pNext = (*p_list)->pNext;
 			break;
 		}
-		p_list = p_list->pNext;
+		p_list = &(*p_list)->pNext;
 	}
-	p_list->pNext = p_item;
+	*p_list = p_item;
 	return 0;
 }

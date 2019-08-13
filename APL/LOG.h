@@ -63,5 +63,10 @@ void LOG_init( LOG_TYPE_t level );
 int LOG_write( LOG_TYPE_t type, int line, uint16_t fn_id, int argc, ... );
 
 /**
+ * @brief ÉçÉOì«Ç›èoÇµAPI
+ */
+int LOG_read( char *str, size_t sz );
+
+/**
  * @} end of addtogroup
  */

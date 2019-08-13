@@ -24,6 +24,26 @@
 #include "LOG.h"
 #include "TIMms.h"
 
+#define SHELL
+#ifdef SHELL
+#include "shell.h"
+#include "UART.h"
+
+/// コマンド提供データ
+static SHELL_COMMAND_t regCmd_setLogOut;
+
+/// ログ出力状態文字列.
+static char		*LOG_STATUS[2] = {
+	"off", "on"
+};
+
+/// ログ出力状態.
+static uint8_t	LOG_out = false;
+
+/// ログ出力文字列バッファ
+static char		LOG_string[80];
+#endif
+
 /**
  * @brief TLV-VALUEデータ型.
  * 文字列コード/10進数/16進数 出力データをセットする.
@@ -67,11 +87,11 @@ typedef struct LOG_DATA_t {
  * @ref LOG_TYPE_t
  */
 static char		*LOG_STR[MAX_LOG_TYPE] = {
-	"DBG: ",
-	"PRM: ",
-	"INF: ",
-	"WRN: ",
-	"ERR: ",
+	"DBG:",
+	"PRM:",
+	"INF:",
+	"WRN:",
+	"ERR:",
 };
 
 /**
@@ -95,6 +115,38 @@ static int			RdPos = 0;
 osQueHandle_t	hLOG_MsgQue;
 
 
+#ifdef SHELL
+/**
+ * @brief ログ出力コマンド.
+ * shellからコールされるCLIコマンド.
+ * @param[in]	argc  
+ * @param[in]	argv  
+ * @note	コマンドライン Usage
+ *			# log [on|off] [--help]
+ */
+static int LOG_output( int argc, char **argv )
+{
+	if( argc == 1 ) {
+		UART_puts( LOG_STATUS[LOG_out] );
+	} else if( argc == 2 ) {
+		if( strncmp( argv[1], "on", 3 ) == 0 ) {
+			LOG_out = true;
+			UART_puts( "set log on" );
+			while( LOG_read( LOG_string, sizeof(LOG_string) ) == 0 ) {
+				UART_puts( LOG_string );
+			}
+		}else if( strncmp( argv[1], "off", 4 ) == 0 ) {
+			LOG_out = false;
+			UART_puts( "set log off" );
+		}
+	} else {
+		UART_puts( "Usage: log [on|off]" );
+		return -1;
+	}
+	return 0;
+}
+#endif
+
 /**
  * @brief ログ出力タスク.
  * @param[in]	arg  未使用.
@@ -113,6 +165,14 @@ static void LOG_task( void *arg )
 		}
 		memcpy( &LOG_buff[WtPos], &msg, sizeof(LOG_DATA_t) );
 		WtPos++;
+
+#ifdef SHELL
+		if( LOG_out ) {
+			while( LOG_read( LOG_string, sizeof(LOG_string) ) == 0 ) {
+				UART_puts( LOG_string );
+			}
+		}
+#endif
 	}
 }
 
@@ -129,6 +189,7 @@ void LOG_init( LOG_TYPE_t level )
 	int		retv;
 
 	/* OSリソース生成 */
+printf("%s\n", __FUNCTION__);
 	hLOG_MsgQue = xQueueCreate( 10, sizeof(LOG_DATA_t) );
 	configASSERT( hLOG_MsgQue != 0 );
 
@@ -143,6 +204,14 @@ void LOG_init( LOG_TYPE_t level )
 	}
 	RdPos = 0;
 	WtPos = 0;
+
+#ifdef SHELL
+	/** shell_init()を予めコール済みであること */
+	regCmd_setLogOut.pCommand = "log";
+	regCmd_setLogOut.pHelp    = "\tlogging data output.";
+	regCmd_setLogOut.pFunc    = LOG_output;
+	shell_registerCommand( &regCmd_setLogOut );
+#endif
 }
 
 
@@ -246,10 +315,10 @@ int LOG_read( char *str, size_t sz )
 	bool		loop = true;
 	int			retv = -1;
 
-	if( RdPos >= MAX_LOG_POOL ) {
-		RdPos = 0;
-	}
 	if( RdPos != WtPos ) {
+		if( RdPos >= MAX_LOG_POOL ) {
+			RdPos = 0;
+		}
 		p_rd = &LOG_buff[RdPos];
 		len = snprintf( str, sz, "%lu %s 0x%x %d ",
 					 p_rd->tick, LOG_STR[p_rd->type], p_rd->fn_id, p_rd->line );
@@ -260,22 +329,23 @@ int LOG_read( char *str, size_t sz )
 		for( i=0; (i < 4)&&(loop); i++ ) {
 			switch( p_rd->tlv.tag[i] ) {
 			case TAG_STR:
-				len = snprintf( str, sz -save_len, " %s", p_rd->tlv.val[i].ptr );
+				len = snprintf( &str[save_len], sz -save_len, " %s", p_rd->tlv.val[i].ptr );
 				break;
 			case TAG_DEC:
-				len = snprintf( str, sz -save_len, " %ld ", p_rd->tlv.val[i].dword );
+				len = snprintf( &str[save_len], sz -save_len, " %ld", p_rd->tlv.val[i].dword );
 				break;
 			case TAG_HEX:
-				len = snprintf( str, sz -save_len, " 0x%lX ", p_rd->tlv.val[i].dword );
+				len = snprintf( &str[save_len], sz -save_len, " 0x%lX", p_rd->tlv.val[i].dword );
+				break;
+			case TAG_TERM:
+				loop = false;
+				retv = 0;
 				break;
 			}
 			if( (len <= 0)||(len >= sz) ) {
 				loop = false;
 				break;
 			}
-		}
-		if( loop ) {
-			retv = 0;
 		}
 		RdPos++;
 	}

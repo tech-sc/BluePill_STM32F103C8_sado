@@ -91,6 +91,7 @@ void TIMms_initTimer( void )
 	osTaskHandle_t	handle;
 	int		retv;
 
+printf("%s\n", __FUNCTION__);
 	/* タイマ起動 */
 	TIMER_ms_init();
 

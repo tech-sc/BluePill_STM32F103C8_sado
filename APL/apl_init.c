@@ -5,12 +5,12 @@
  * @date	2019/07/04
  * @author	Teru
  */
-#include "os.h"
-#include "TIMms.h"
-#include "ExtLED.h"
 #include "BSP_LED.h"
+#include "ExtLED.h"
+#include "TIMms.h"
 #include "LOG.h"
 #include "shell.h"
+#include "os.h"
 #include "apl_init.h"
 
 /**************************************************************************//**
@@ -37,9 +37,10 @@ void apl_init( void )
 	xTaskHandle		handle;
 
 	TIMms_initTimer();
-	LOG_init( LOG_INFO );
 	shell_init();
+	LOG_init( LOG_DEBUG );
 
+printf("%s\n", __FUNCTION__);
     osMutex_create( expire_mutex );
     osMutex_take( expire_mutex, portMAX_DELAY );
 
