@@ -66,10 +66,10 @@ enum TIMms_OPTCD {
 	TIMms_REPEAT	= 0x0020,		/**< ƒŠƒs[ƒg */
 };
 
-/// ƒ~ƒŠ•b¨tick•ÏŠ·. 1TICK=0.25msec
-#define MSEC_TO_TICK(ms)		(int64_t)((int64_t)ms * 4) +1
-/// tick¨ƒ~ƒŠ•b•ÏŠ·. 1TICK=0.25msec
-#define TICK_TO_MSEC(tick)		(int32_t)(tick / 4)
+/// ƒ~ƒŠ•b¨tick•ÏŠ·. 1TICK=0.20msec
+#define MSEC_TO_TICK(ms)		(int64_t)((int64_t)ms * 5) +1
+/// tick¨ƒ~ƒŠ•b•ÏŠ·. 1TICK=0.20msec
+#define TICK_TO_MSEC(tick)		(int32_t)(tick / 5)
 
 /**
  * @brief ‰ŠúÝ’èAPI

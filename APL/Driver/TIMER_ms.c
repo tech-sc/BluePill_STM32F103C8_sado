@@ -41,7 +41,7 @@ void TIMER_ms_init( void )
 	NVIC_EnableIRQ( TIMER_MS_IRQ );
 
 	/* setup */
-	TIM_InitStruct.Prescaler = 6000;
+	TIM_InitStruct.Prescaler = 9600;
 	TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
 	TIM_InitStruct.Autoreload = 0xffff;
 	TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;

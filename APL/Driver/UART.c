@@ -82,7 +82,7 @@ static int UART_config( void )
 
 	/* USER CODE END USART2_Init 1 */
 	uart_HandleStruct.Instance          = UART;
-	uart_HandleStruct.Init.BaudRate     = 57600;
+	uart_HandleStruct.Init.BaudRate     = 115200;
 	uart_HandleStruct.Init.WordLength   = UART_WORDLENGTH_8B;
 	uart_HandleStruct.Init.StopBits     = UART_STOPBITS_1;
 	uart_HandleStruct.Init.Parity       = UART_PARITY_NONE;
