@@ -80,6 +80,7 @@ static void SystemClock_Config(void)
 	while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL);
 
 	LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+	SystemCoreClock = configCPU_CLOCK_HZ;
 }
 
 /************************************************************************************//**
