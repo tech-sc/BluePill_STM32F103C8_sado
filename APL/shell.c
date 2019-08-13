@@ -1,9 +1,22 @@
-/**************************************************************************//**
- * @file	shell.c
- * @brief	CLIコマンドシェル
- * @version V1.0.0
- * @date	2014/01/12
- * @author	Teru
+/**
+ * @file  shell.c
+ * @brief コマンドシェル機能.
+ * 
+ * コマンド・ライン・インタフェースにコマンド・シェル機能を提供する.
+ * 
+ * @author      Teru
+ * @date        2014/01/12
+ * @version     Rev0.10
+ * 
+ * @par 変更履歴:
+ * - Rev0.01: 2014/01/12: 新規作成.
+ * - Rev0.02: 2019/08/13: Doxygen対応.
+ * 
+ * @copyright   2014-19 Emb-se.com.
+ */
+/**
+ * @addtogroup GROUP_SHELL コマンドシェル機能.
+ * @{
  */
 #include <stdio.h>
 #include <string.h>
@@ -13,13 +26,17 @@
 #include "UART.h"
 #include "shell.h"
 
-/**************************************************************************//**
- * @brief	定数定義
+/**
+ * @brief 定数定義
  */
+/// 改行コードモード：CR+LF
 #undef  CRLF_MODE
+/// 改行コードモード：CR
 #undef  CR_MODE
+/// 改行コードモード：LF
 #define LF_MODE
 
+/// プロンプト
 #define SHELL_PROMPT		"sh #"
 
 #if defined(CRLF_MODE)
@@ -36,23 +53,26 @@
   #define SHELL_COMMAND_ERR		"\rcommand error.\r"
 #endif //LF_MODE
 
-/**************************************************************************//**
- * @brief	関数定義
+
+/**
+ * @brief 関数定義
  */
 /** シェル入出力先デバイスI/O API定義 */
-/* 入出力先デバイス：UART */
+/// １文字入力(入力先デバイス：UART)
 #define MonIO_getchar		UART_getchar
+/// 文字列+CR出力(出力先デバイス：UART)
 #define MonIO_puts			UART_puts
+/// 文字列出力(出力先デバイス：UART)
 #define MonIO_putstr		UART_putstr
 
 /** 内部関数 */
+/// プロンプト出力
 #define shell_promt()		MonIO_putstr( SHELL_PROMPT )
+/// プロンプト+CR出力
 #define shell_cr_promt()	MonIO_putstr( SHELL_CR SHELL_PROMPT )
 
-void shell_task( void *arg );
-int  shell_help( int argc, char **argv );
-int  shell_regist_command( SHELL_COMMAND_t *p_item );
-
+static void shell_task( void *arg );
+static int  shell_help( int argc, char **argv );
 static int  shell_core( void );
 static int  shell_esc( void );
 static SHELL_COMMAND_t *shell_find_command( SHELL_COMMAND_t *p_list, char *str, int len );
@@ -60,29 +80,38 @@ static void shell_execute( int argc, char **argv );
 static int  shell_arglist( char **argv, char *str );
 
 
-/**************************************************************************//**
- * @brief	変数定義
+/**
+ * @brief 変数定義
  */
-/** シェルコアバッファ */
+/// シェルコア:バッファサイズ
 #define SHELL_CORE_BUFF_SIZE		384
-char		shell_CoreBuff[ SHELL_CORE_BUFF_SIZE ];
-char		*shell_CoreBuffCursol_p;		/* カーソル位置ポインタ */
-int16_t		shell_CoreBuff_len;				/* コマンド文字数 */
-char		shell_tempBuff[ 20 ];
-int16_t		shell_tempBuff_len;
+/// シェルコア:バッファ
+static char		shell_CoreBuff[ SHELL_CORE_BUFF_SIZE ];
+/// シェルコア:カーソル位置ポインタ
+static char		*shell_CoreBuffCursol_p;
+/// シェルコア:コマンド文字長
+static int16_t		shell_CoreBuff_len;
 
-/** CLIコマンド引数リスト */
+/// テンポラリバッファ
+static char		shell_tempBuff[ 20 ];
+/// テンポラリバッファ文字長
+static int16_t		shell_tempBuff_len;
+
+/// CLIコマンド引数リスト数
 #define SHELL_ARGV_SIZE				16
-char	*shell_argv[ SHELL_ARGV_SIZE ];
+/// CLIコマンド引数リスト
+static char	*shell_argv[ SHELL_ARGV_SIZE ];
 
-/** CLIコマンドテーブル */
-SHELL_COMMAND_t	shell_CommandTbl = {
+/// CLIコマンドテーブル
+static SHELL_COMMAND_t	shell_CommandTbl = {
 	"help", shell_help, "\tshow entry command lists." SHELL_CR "\tshell version 1.00", NULL
 };
 
 
 /**************************************************************************//**
- * @brief  CLIコマンドシェル初期設定
+ * @brief  初期設定API
+ *
+ * コマンドシェル機能の初期設定を行う.
  */
 void shell_init( void )
 {
@@ -103,7 +132,7 @@ void shell_init( void )
  * @brief  CLIコマンドシェルタスク
  * @param[in] arg  タスク起動パラメータ
  */
-void shell_task( void *arg )
+static void shell_task( void *arg )
 {
 	int			argc;
 
@@ -130,7 +159,7 @@ void shell_task( void *arg )
 
 /**************************************************************************//**
  * @brief  CLIコマンドシェルコア
- * @return	None
+ * @retval	0	Success
  */
 static int shell_core( void )
 {
@@ -315,9 +344,8 @@ static SHELL_COMMAND_t *shell_find_command( SHELL_COMMAND_t *p_list, char *str, 
 
 /**************************************************************************//**
  * @brief	登録されたCLIコマンドの実行
- * @param	argc	[in]CLIコマンド引数の数
- * @param	argv	[in]CLIコマンド引数リスト
- * @return	None
+ * @param[in]	argc	CLIコマンド引数の数
+ * @param[in]	argv	CLIコマンド引数リスト
  */
 static void shell_execute( int argc, char **argv )
 {
@@ -344,8 +372,8 @@ static void shell_execute( int argc, char **argv )
 
 /**************************************************************************//**
  * @brief	CLIコマンド引数リスト生成
- * @param	argv	[out]CLIコマンド引数リスト
- * @param	str		[in,out]CLIコマンド行文字列／空白文字をNULL文字に置き換える
+ * @param[out]	argv		CLIコマンド引数リスト
+ * @param[inout]	str		CLIコマンド行文字列／空白文字をNULL文字に置き換える
  * @return	生成したコマンド引数の数
  */
 static int shell_arglist( char **argv, char *str )
@@ -376,11 +404,11 @@ static int shell_arglist( char **argv, char *str )
 
 /**************************************************************************//**
  * @brief	ヘルプコマンド（コマンド一覧表示）
- * @param	argc	[in]コマンド引数の数
- * @param	argv	[in]コマンド引数リスト
- * @return	0		OK
+ * @param[in]	argc		コマンド引数の数
+ * @param[in]	argv		コマンド引数リスト
+ * @retval	0	Success
  */
-int shell_help( int argc, char **argv )
+static int shell_help( int argc, char **argv )
 {
 	SHELL_COMMAND_t		*p_list;
 
@@ -396,12 +424,14 @@ int shell_help( int argc, char **argv )
 
 
 /**************************************************************************//**
- * @brief	CLIコマンド登録
- * @param	p_item	[in]登録するコマンド情報 ※スタック領域NG
- * @return	0		登録OK
- * @return	-1		パラメータエラー
+ * @brief コマンド登録API
+ *
+ * コマンドシェル機能にコマンドを登録する.
+ * @param[in]	p_item		登録するコマンド情報 ※スタック領域NG
+ * @retval	0	登録OK
+ * @retval	-1	パラメータエラー
  */
-int shell_regist_command( SHELL_COMMAND_t *p_item )
+int shell_registerCommand( SHELL_COMMAND_t *p_item )
 {
 	SHELL_COMMAND_t		*p_list;
 
