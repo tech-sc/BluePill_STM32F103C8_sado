@@ -124,7 +124,7 @@ printf("%s\n", __FUNCTION__);
 	shell_CoreBuff_len     = 0;
 	shell_CoreBuffCursol_p = shell_CoreBuff;
 
-	retv = xTaskCreate( &shell_task, "Shell", shellTASK_STACKSZ/4,	// stack size=64*4=256byte
+	retv = xTaskCreate( &shell_task, "Shell", shell_STACKSZ/4,	// stack size=64*4=256byte
 						NULL, 3 | portPRIVILEGE_BIT, &handle );
 	configASSERT(retv == pdPASS);
 }

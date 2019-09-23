@@ -103,11 +103,10 @@ printf("%s\n", __FUNCTION__);
 	TIMms_NextExpire = (TIMCNT_t)-1;	//最大値セット
 
 	/* OSリソース生成 */
-	osMutex_create( TIMms_ExpireMutex );
-	osMutex_take( TIMms_ExpireMutex, portMAX_DELAY );
+	TIMms_ExpireMutex = osMutex_create();
 
 	/* 発火コールバック用タスクを生成する. */
-	retv = osTask_create( &TIMms_task, "TIMms", TIMmsTASK_STACKSZ/4,
+	retv = osTask_create( &TIMms_task, "TIMms", TIMms_STACKSZ/4,
 						NULL, TIMmsTASK_PRI | portPRIVILEGE_BIT, &handle );
 	configASSERT( retv == pdPASS );
 }

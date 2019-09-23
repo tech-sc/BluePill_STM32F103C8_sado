@@ -194,7 +194,7 @@ printf("%s\n", __FUNCTION__);
 	configASSERT( hLOG_MsgQue != 0 );
 
 	/* ログ出力用タスクを生成する. */
-	retv = osTask_create( &LOG_task, "LOG", LOGTASK_STACKSZ/4,
+	retv = osTask_create( &LOG_task, "LOG", LOG_STACKSZ/4,
 						NULL, LOGTASK_PRI | portPRIVILEGE_BIT, &handle );
 	configASSERT( retv == pdPASS );
 

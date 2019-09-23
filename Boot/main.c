@@ -51,7 +51,7 @@ void Error_Handler(void)
 /**
  * @brief System Clock Configuration
  *
- * @detail HSE=8MHz、APB1-PCLK=12MHz(for MCP23017(I2C1))、APB1-TCLK=24MHz
+ * @detail HSE=8MHz、APB1-PCLK=24MHz(for MCP23017(I2C1))、APB1-TCLK=48MHz
  *         SYSTICK, APB2-PCLK, APB2-CLK, HCLK, AHB=48MHz
  * @retval None
  */
@@ -72,7 +72,7 @@ static void SystemClock_Config(void)
 	while(LL_RCC_PLL_IsReady() != 1);
 
 	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-	LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_4);
+	LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_2);
 	LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
 	LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
 
