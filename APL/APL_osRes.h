@@ -8,17 +8,20 @@ enum {
 	TIMms_TASKID,
 	LOG_TASKID,
 	APL_INITTASKID,
+	AplTemp_TASKID,
 	MAX_TASKNUM,
 };
 enum {
 	TMRSVC_QUEID = 0,
 	LOG_QUEID,
+	AplTemp_QUEID,
 	MAX_QUENUM,
 };
 enum {
 	UART_RXMUTEXID = 0,
 	TIMms_MUTEXID,
 	APL_INITMUTEXID,
+	AplTemp_MUTEXID,
 	MAX_MUTEXNUM,
 };
 
@@ -34,21 +37,26 @@ enum {
 // タスクのスタック・メモリサイズ
 #define	osIDLE_STACKSZ		256
 #define	osTMRSVC_STACKSZ	256
-#define	shellTASK_STACKSZ	384
-#define	TIMmsTASK_STACKSZ	256
-#define	LOGTASK_STACKSZ		384
-#define	APLinitTASK_STACKSZ	256
-#define TOTAL_STACKSZ		( osIDLE_STACKSZ + osTMRSVC_STACKSZ \
-							+ shellTASK_STACKSZ \
-							+ TIMmsTASK_STACKSZ \
-							+ LOGTASK_STACKSZ \
-							+ APLinitTASK_STACKSZ )
+#define	shell_STACKSZ		384
+#define	TIMms_STACKSZ		256
+#define	LOG_STACKSZ			384
+#define	APLinit_STACKSZ		256
+#define	AplTemp_STACKSZ		256
+#define TOTAL_STACKSZ		( osIDLE_STACKSZ \
+							+ osTMRSVC_STACKSZ \
+							+ shell_STACKSZ \
+							+ TIMms_STACKSZ \
+							+ LOG_STACKSZ \
+							+ APLinit_STACKSZ \
+							+ AplTemp_STACKSZ )
 
 // キューのコンテンツ・メモリサイズ(コンテンツサイズ*個数)
-#define	osTMRSVC_QUESZ		( 12*10+8 )
-#define	LOG_QUESZ			( 44*10+8 )
+#define	osTMRSVC_QUESZ		( 12*10 +8 )
+#define	LOG_QUESZ			( 44*10 +8 )
+#define	AplTemp_QUESZ		( 16*3  +8 )
 #define TOTAL_QUESZ			( osTMRSVC_QUESZ \
-							+ LOG_QUESZ )
+							+ LOG_QUESZ \
+							+ AplTemp_QUESZ )
 
 // OSヒープサイズ
 #define osHEAP_SZ			( TOTAL_MNGSZ			\
@@ -56,9 +64,10 @@ enum {
 							+ TOTAL_QUESZ)
 
 #define TIMmsTASK_PRI		(configMAX_PRIORITIES -1)
-#define shellTASK_PRI		(configMAX_PRIORITIES -2)
+#define shellTASK_PRI		(configMAX_PRIORITIES -3)
 #define LOGTASK_PRI			(configMAX_PRIORITIES -4)
 #define APLinitTASK_PRI		(configMAX_PRIORITIES -4)
+#define AplTempTASK_PRI		(configMAX_PRIORITIES -4)
 
 
 #endif // _APL_osRes.h_

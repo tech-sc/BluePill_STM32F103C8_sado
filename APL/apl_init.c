@@ -41,10 +41,10 @@ void apl_init( void )
 	LOG_init( LOG_DEBUG );
 
 printf("%s\n", __FUNCTION__);
-    osMutex_create( expire_mutex );
+    expire_mutex = osMutex_create();
     osMutex_take( expire_mutex, portMAX_DELAY );
 
-	retv = osTask_create( &apl_initTask, "APL_init", APLinitTASK_STACKSZ/4,
+	retv = osTask_create( &apl_initTask, "APL_init", APLinit_STACKSZ/4,
 						NULL, APLinitTASK_PRI | portPRIVILEGE_BIT, &handle );
 	configASSERT(retv == pdPASS);
 }
