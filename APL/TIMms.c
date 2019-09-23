@@ -104,7 +104,6 @@ printf("%s\n", __FUNCTION__);
 
 	/* OSリソース生成 */
 	TIMms_ExpireMutex = osMutex_create();
-	osMutex_take( TIMms_ExpireMutex, portMAX_DELAY );
 
 	/* 発火コールバック用タスクを生成する. */
 	retv = osTask_create( &TIMms_task, "TIMms", TIMms_STACKSZ/4,

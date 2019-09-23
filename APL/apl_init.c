@@ -42,7 +42,6 @@ void apl_init( void )
 
 printf("%s\n", __FUNCTION__);
     expire_mutex = osMutex_create();
-    osMutex_take( expire_mutex, portMAX_DELAY );
 
 	retv = osTask_create( &apl_initTask, "APL_init", APLinit_STACKSZ/4,
 						NULL, APLinitTASK_PRI | portPRIVILEGE_BIT, &handle );
