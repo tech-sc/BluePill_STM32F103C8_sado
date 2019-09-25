@@ -36,15 +36,21 @@
 #define ExtSW1_PIN			GPIO_PIN_8
 #define EXTI9_5_PRIORITY	5
 
+typedef enum ExtSW_e {
+	ExtSW1 = 1,
+	ExtSW2,
+	MAX_ExtSW
+}ExtSW_e;
+
 /**
  * @brief 外部スイッチの初期設定.
  */
 extern void ExtSW_init(void);
 
 /**
- * @brief SW1割込み処理.
+ * @brief SW割込み処理.
  */
-extern void ExtSW1_handler(void);
+extern void ExtSW_Handler(void);
 /**
  * @} end of addtogroup
  */
