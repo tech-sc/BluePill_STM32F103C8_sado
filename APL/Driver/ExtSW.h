@@ -15,7 +15,6 @@
 
 #include "stm32f1xx.h"
 #include "stm32f1xx_hal.h"
-#include "ExtLED.h"
 
 /**
  * @page PAGE_ExtSW ŠO•”‰ñ˜HŠî”ÂSW§Œä.
