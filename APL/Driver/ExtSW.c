@@ -36,7 +36,7 @@ void ExtSW_init(void)
 	/** @li ExtSW1初期設定 */
 	/* Configure GPIO pin */
 	GPIO_InitStruct.Pin   = ExtSW1_PIN;
-	GPIO_InitStruct.Mode  = GPIO_MODE_IT_FALLING;
+	GPIO_InitStruct.Mode  = GPIO_MODE_IT_RISING_FALLING;
 	GPIO_InitStruct.Pull  = GPIO_PULLUP;
 	HAL_GPIO_Init( ExtSW1_POPT, &GPIO_InitStruct );
 
@@ -47,18 +47,45 @@ void ExtSW_init(void)
 }
 
 /**
- * @brief SW1割込み処理.
+ * @brief SW状態処理割込みハンドラ.
+ *
+ * 立下り(active)エッジ割込み時にコールされる.
+ * @param[in] sw_no Active状態に変化したスイッチ番号.
+ * @return なし.
+ */
+__weak void ExtSW_activeHandler( ExtSW_e sw_no )
+{
+	ExtLED1_toggle();
+}
+
+/**
+ * @brief SW状態処理割込みハンドラ.
+ *
+ * 立上がり(inactive)エッジ割込み時にコールされる.
+ * @param[in] sw_no Inactive状態に変化したスイッチ番号.
+ * @return なし.
+ */
+__weak void ExtSW_inactiveHandler( ExtSW_e sw_no )
+{
+}
+
+/**
+ * @brief SW割込み処理.
  *
  * 立下り(active)または立上がり(inactive)エッジ割込みを処理する.
  * @param なし.
  * @return なし.
  */
-inline void ExtSW1_handler(void)
+inline void ExtSW_Handler(void)
 {
 	/* EXTI line interrupt detected */
 	if( __HAL_GPIO_EXTI_GET_IT(ExtSW1_PIN) ) {
 		__HAL_GPIO_EXTI_CLEAR_IT( ExtSW1_PIN );
-		ExtLED1_toggle();
+		if( HAL_GPIO_ReadPin( ExtSW1_POPT, ExtSW1_PIN ) == GPIO_PIN_SET ) {
+			ExtSW_inactiveHandler( ExtSW1 );
+		} else {
+			ExtSW_activeHandler( ExtSW1 );
+		}
 	}
 }
 

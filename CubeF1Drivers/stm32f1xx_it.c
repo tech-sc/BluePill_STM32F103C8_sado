@@ -86,7 +86,7 @@ void PVD_IRQHandler(void)
  */
 void EXTI9_5_IRQHandler(void)
 {
-	ExtSW1_handler();
+	ExtSW_Handler();
 }
 
 /**
