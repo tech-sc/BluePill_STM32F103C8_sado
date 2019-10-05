@@ -12,6 +12,7 @@
 #include "shell.h"
 #include "os.h"
 #include "apl_init.h"
+#include "SW_Ctrl.h"
 
 /**************************************************************************//**
  * @brief	’è”’è‹`
@@ -39,6 +40,7 @@ void apl_init( void )
 	TIMms_initTimer();
 	shell_init();
 	LOG_init( LOG_DEBUG );
+        SwCtrl_init();
 
 printf("%s\n", __FUNCTION__);
     expire_mutex = osMutex_create();

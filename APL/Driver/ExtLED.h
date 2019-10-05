@@ -103,6 +103,12 @@ extern void ExtLED_init(void);
 #define ExtLED2_toggle()	HAL_GPIO_TogglePin( ExtLED2_POPT, ExtLED2_PIN )
 
 /**
+ * @brief äOïîLED2ÇÃì_ìîÅEè¡ìî.
+ */
+#define ExtLED_turnON(port, pin)	HAL_GPIO_WritePin( port, pin, GPIO_PIN_RESET )
+#define ExtLED_turnOFF(port, pin)	HAL_GPIO_WritePin( port, pin, GPIO_PIN_RESET )
+
+/**
  * @} end of addtogroup
  */
 #endif // _ExtLED_H_

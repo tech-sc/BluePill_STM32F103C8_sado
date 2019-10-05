@@ -42,13 +42,15 @@ enum {
 #define	LOG_STACKSZ			384
 #define	APLinit_STACKSZ		256
 #define	AplTemp_STACKSZ		256
+#define	SwCtrl_STACKSZ		256
 #define TOTAL_STACKSZ		( osIDLE_STACKSZ \
 							+ osTMRSVC_STACKSZ \
 							+ shell_STACKSZ \
 							+ TIMms_STACKSZ \
 							+ LOG_STACKSZ \
 							+ APLinit_STACKSZ \
-							+ AplTemp_STACKSZ )
+							+ AplTemp_STACKSZ \
+							+ SwCtrl_STACKSZ )
 
 // キューのコンテンツ・メモリサイズ(コンテンツサイズ*個数)
 #define	osTMRSVC_QUESZ		( 12*10 +8 )
@@ -68,6 +70,7 @@ enum {
 #define LOGTASK_PRI			(configMAX_PRIORITIES -4)
 #define APLinitTASK_PRI		(configMAX_PRIORITIES -4)
 #define AplTempTASK_PRI		(configMAX_PRIORITIES -4)
+#define SwCtrlTASK_PRI		(configMAX_PRIORITIES -3)
 
 
 #endif // _APL_osRes.h_
