@@ -53,9 +53,8 @@ void ExtSW_init(void)
  * @param[in] sw_no Active状態に変化したスイッチ番号.
  * @return なし.
  */
-__weak void ExtSW_activeHandler( ExtSW_e sw_no )
+__weak void ExtSW_activeHandler( ExtSW sw_no )
 {
-	ExtLED1_toggle();
 }
 
 /**
@@ -65,7 +64,7 @@ __weak void ExtSW_activeHandler( ExtSW_e sw_no )
  * @param[in] sw_no Inactive状態に変化したスイッチ番号.
  * @return なし.
  */
-__weak void ExtSW_inactiveHandler( ExtSW_e sw_no )
+__weak void ExtSW_inactiveHandler( ExtSW sw_no )
 {
 }
 

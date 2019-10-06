@@ -42,7 +42,7 @@ void apl_init( void )
 	LOG_init( LOG_DEBUG );
         SwCtrl_init();
 
-printf("%s\n", __FUNCTION__);
+	printf("%s\n", __FUNCTION__);
     expire_mutex = osMutex_create();
 
 	retv = osTask_create( &apl_initTask, "APL_init", APLinit_STACKSZ/4,
@@ -68,7 +68,6 @@ static void tmX_expire( void *handle )
 {
 	LOG_write( LOG_DEBUG, __LINE__, 0x0010, 2, TAG_STR, "500ms Expire" );
 
-	ExtLED2_toggle();
 	BSP_LED_toggle();
 	TIMms_reqTimer( 500, &tmX_expire, handle );
 }

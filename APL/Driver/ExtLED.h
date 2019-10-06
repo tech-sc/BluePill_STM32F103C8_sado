@@ -41,6 +41,10 @@
 #define ExtLED1_PIN			GPIO_PIN_0
 #define ExtLED2_POPT		GPIOB
 #define ExtLED2_PIN			GPIO_PIN_1
+#define ExtLED3_POPT		GPIOB
+#define ExtLED3_PIN			GPIO_PIN_10
+#define ExtLED4_POPT		GPIOB
+#define ExtLED4_PIN			GPIO_PIN_11
 
 /**
  * @brief 外部LEDの初期設定.
@@ -103,10 +107,18 @@ extern void ExtLED_init(void);
 #define ExtLED2_toggle()	HAL_GPIO_TogglePin( ExtLED2_POPT, ExtLED2_PIN )
 
 /**
- * @brief 外部LED2の点灯・消灯.
+ * @brief 外部LEDの点灯・消灯.
  */
-#define ExtLED_turnON(port, pin)	HAL_GPIO_WritePin( port, pin, GPIO_PIN_RESET )
-#define ExtLED_turnOFF(port, pin)	HAL_GPIO_WritePin( port, pin, GPIO_PIN_RESET )
+#define ExtLED_turnON(port, pin) {						\
+	if( pin == ExtLED1_PIN || pin == ExtLED2_PIN )	{	\
+		HAL_GPIO_WritePin( port, pin, GPIO_PIN_RESET );	\
+	}													\
+}
+#define ExtLED_turnOFF(port, pin) {						\
+	if( pin == ExtLED1_PIN || pin == ExtLED2_PIN )	{	\
+		HAL_GPIO_WritePin( port, pin, GPIO_PIN_SET );	\
+	}													\
+}
 
 /**
  * @} end of addtogroup

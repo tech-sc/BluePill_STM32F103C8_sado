@@ -18,43 +18,16 @@
  * @addtogroup SwCtrl_GROUP アプリテンプレート機能.
  * @{
  */
+#include <string.h>
 #include <stdbool.h>
-#include "os.h"
 #include "SW_Ctrl.h"
+#include "os.h"
+#include "ExtSW.h"
 #include "ExtLED.h"
 
 #undef  MUTEX_SAMPLE
 #define QUEUE_SAMPLE
 #define TASK_SAMPLE
-
-/**
- * @brief スイッチデバイス.
- */
-typedef enum EXT_DEV {
-    DEV_ExtSW1    = 0x0101,     /**< Ext SW1 */
-    DEV_ExtSW2    = 0x0102,     /**< Ext SW2 */
-    DEV_BSPSW1    = 0x0001,     /**< BSP SW1 */
-    MAX_EXT_DEV
-}EXT_DEV;
-
-/**
- * @brief 外部イベントコード.
- * 処理する外部からのイベントコードを定義する.
- */
-typedef enum EXT_EVENT {
-    DEV_EVENT_OFF = 0x0100,     /**< OFF通知イベント */
-    DEV_EVENT_ON  = 0x0101,     /**< ON通知イベント */
-}EXT_EVENT;
-
-/**
- * @brief SwCtrlメッセージデータ型.
- */
-typedef struct SwCtrl_MSG_t {
-    /// スイッチデバイス.
-    EXT_DEV         dev_no;
-    /// スイッチ状態.
-    EXT_EVENT       dev_event;
-}SwCtrl_MSG_t;
 
 
 /**
@@ -62,7 +35,7 @@ typedef struct SwCtrl_MSG_t {
  * シーケンシャルな制御デバイス番号を定義する.
  */
 typedef enum CTRL_DEV {
-    DEV_SW1       = 0,
+    DEV_SW1         = 0,
     DEV_SW2,
     DEV_SW3,
     MAX_CTRL_DEV
@@ -73,27 +46,32 @@ typedef enum CTRL_DEV {
  * シーケンシャルな制御イベント番号を定義する.
  */
 typedef enum CTRL_EVENT {
-    EVENT_OFF     = 0,
+    EVENT_OFF       = 0,
     EVENT_ON,
     MAX_CTRL_EVENT
 }CTRL_EVENT;
+
+/**
+ * @brief SwCtrlメッセージデータ型.
+ */
+typedef struct SwCtrl_MSG_t {
+    /// スイッチデバイス.
+    CTRL_DEV    dev_no;
+    /// スイッチ状態.
+    CTRL_EVENT  dev_event;
+}SwCtrl_MSG_t;
+
 
 /**
  * @brief 制御状態番号.
  * シーケンシャルな制御ステート番号を定義する.
  */
 typedef enum CTRL_STATE {
-    STATE_OFF      = 0,         /**< OFF状態 */
-    STATE_ON,                   /**< ON状態 */
+    STATE_OFF       = 0,         /**< OFF状態 */
+    STATE_ON,                    /**< ON状態 */
     STATE_ERR,
     MAX_CTRL_STATE
 }CTRL_STATE;
-
-/**
- * @brief 制御スイッチ状態
- * 制御するスイッチの状態
- */
-CTRL_STATE  SwCtrl_State[MAX_CTRL_DEV];
 
 
 /**
@@ -146,19 +124,16 @@ StateTbl_t  SwCtrl_StateTbl[ MAX_CTRL_STATE ] = {
 };
 
 /**
- * @brief 現在の制御状態番号.
+ * @brief スイッチ制御機能の管理データ
  */
 typedef struct SwCtrl_MNGR_t {
-    CTRL_STATE          state;
+	/// 現在の各SW制御ステート状態番号.
+    CTRL_STATE		NowState[ MAX_CTRL_DEV ];
+	uint8_t			SW1Counter;
 }SwCtrl_MNGR_t;
 
-static CTRL_STATE   SwCtrl_NowState;
+static SwCtrl_MNGR_t	SwCtrl_MngData;
 
-uint8_t SwCtrl_counter;
-
-/**
- * @brief SwCtrl管理データデータ型.
- */
 
 
 #ifdef MUTEX_SAMPLE
@@ -170,46 +145,6 @@ uint8_t SwCtrl_counter;
     static osQueHandle_t    SwCtrl_hQue;
 #endif
 
-
-/**
- * @brief 外部イベントから制御イベント番号への変換.
- * @param[in]   ext_event   外部イベントコード.
- * @return  変換したシーケンシャルな制御イベント番号.
- * @retval  EVENT_ERR   エラー.
- */
-static CTRL_EVENT convExtEventToCtrlEvent( EXT_EVENT ext_event )
-{
-    CTRL_EVENT  retv = MAX_CTRL_EVENT;
-
-    switch( ext_event ) {
-    case DEV_EVENT_OFF:
-        retv = EVENT_OFF;
-        break;
-    case DEV_EVENT_ON:
-        retv = EVENT_ON;
-        break;
-    default:
-        break;
-    }
-    return retv;
-}
-
-CTRL_DEV convExtDevToCtrlDev( EXT_DEV dev )
-{
-    CTRL_DEV  retv = MAX_CTRL_DEV;
-
-    switch( dev ) {
-    case DEV_ExtSW1:
-        retv = DEV_SW1;
-        break;
-    case DEV_ExtSW2:
-        retv = DEV_SW2;
-        break;
-    default:
-        break;
-    }
-    return retv;
-}
 
 /**
  * @brief ステートアクション関数群.
@@ -248,8 +183,8 @@ typedef struct {
 }LedCtrl_Info;
 static const LedCtrl_Info   led[ 4 ] = {{ExtLED1_POPT, ExtLED1_PIN},
                                         {ExtLED2_POPT, ExtLED2_PIN},
-                                        {ExtLED1_POPT, ExtLED1_PIN},
-                                        {ExtLED1_POPT, ExtLED1_PIN}};
+                                        {ExtLED3_POPT, ExtLED3_PIN},
+                                        {ExtLED4_POPT, ExtLED4_PIN}};
 
 // スイッチアクション
 static void SwCtrl_action( CTRL_DEV dev, CTRL_STATE next_s )
@@ -257,15 +192,17 @@ static void SwCtrl_action( CTRL_DEV dev, CTRL_STATE next_s )
     int     i= 0;
     switch( dev ) {
     case DEV_SW1:
-        SwCtrl_counter++;
-        // LED表示
-        for( i=0; i<4; i++ ) {
-            if( SwCtrl_counter & (1 << i) ) {
-                ExtLED_turnON( led[i].port, led[i].pin );
-            } else {
-                ExtLED_turnOFF( led[i].port, led[i].pin );
-            }
-        }
+		if( next_s == STATE_ON ) {
+			SwCtrl_MngData.SW1Counter++;
+			// LED表示
+			for( i=0; i<4; i++ ) {
+				if( SwCtrl_MngData.SW1Counter & (1 << i) ) {
+					ExtLED_turnON( led[i].port, led[i].pin );
+				} else {
+					ExtLED_turnOFF( led[i].port, led[i].pin );
+				}
+			}
+		}
         break;
     default:
         break;
@@ -278,20 +215,13 @@ static void SwCtrl_action( CTRL_DEV dev, CTRL_STATE next_s )
  * @retval  true    正常終了.
  * @retval  false   エラー発生.
  */
-static bool StateMachine( EXT_EVENT ext_event, CTRL_STATE now_s, CTRL_STATE *next_s )
+static bool StateMachine( CTRL_EVENT ctrl_event, CTRL_STATE now_s, CTRL_STATE *next_s )
 {
-    CTRL_EVENT  ctrl_event = MAX_CTRL_EVENT;
     StateTbl_t  *p_state = NULL;
     ActionTbl_t *p_act   = NULL;
     bool       retv      = false;
 
-    /**< 外部イベントを制御イベント番号への変換 */
-    ctrl_event = convExtEventToCtrlEvent( ext_event );
-    if( ctrl_event == MAX_CTRL_EVENT ) {
-        return false;
-    }
-
-    p_state = &SwCtrl_StateTbl[ ctrl_event ];
+    p_state = &SwCtrl_StateTbl[ now_s ];
     if( p_state == NULL ) {
         return false;
     }
@@ -301,6 +231,7 @@ static bool StateMachine( EXT_EVENT ext_event, CTRL_STATE now_s, CTRL_STATE *nex
     if( p_act == NULL ) {
         return false;
     }
+	p_act = &p_act[ ctrl_event ];
     retv = p_act->p_func( now_s, next_s );
 
     return retv;
@@ -319,7 +250,6 @@ static void SwCtrl_Task( void *arg )
 #if defined(QUEUE_SAMPLE)||defined(MUTEX_SAMPLE)
     osRetVal_t      retv;
 #endif
-    CTRL_DEV        dev;
     CTRL_STATE      next_s;
 
     while( 1 ){
@@ -336,15 +266,11 @@ static void SwCtrl_Task( void *arg )
             continue;
         }
 #endif
-        if( StateMachine( msg.dev_event, SwCtrl_NowState, &next_s ) ) {
-            // 物理デバイス番号を論理シーケンシャルデバイス番号に変換
-            dev = convExtDevToCtrlDev( msg.dev_no );
-            if( dev != MAX_CTRL_DEV ) {
-                // 次状態遷移
-                SwCtrl_State[ dev ] = next_s;
-                // スイッチアクション
-                SwCtrl_action( dev, next_s );
-            }
+        if( StateMachine( msg.dev_event, SwCtrl_MngData.NowState[msg.dev_no], &next_s ) ) {
+			// 次状態遷移
+			SwCtrl_MngData.NowState[ msg.dev_no ] = next_s;
+			// スイッチアクション
+			SwCtrl_action( msg.dev_no, next_s );
         }
     }
 }
@@ -360,20 +286,22 @@ void SwCtrl_init( void )
     osTaskHandle_t  handle;
     int     retv;
 
+	printf("%s\n", __FUNCTION__);
     /* 内部管理データ初期化 */
+	memset( &SwCtrl_MngData, 0, sizeof(SwCtrl_MngData) );
 
     /* OSリソース生成 */
 #ifdef MUTEX_SAMPLE
-    // MUTEX生成
+    // MUTEX生成.
     SwCtrl_hMutex = osMutex_create();
-    configASSERT( SwCtrl_hMutex == 0 );
+    configASSERT( SwCtrl_hMutex != 0 );
 #endif
 #ifdef QUEUE_SAMPLE
     SwCtrl_hQue = osQue_create( 3, sizeof(SwCtrl_MSG_t) );
-    configASSERT( SwCtrl_hQue == 0 );
+    configASSERT( SwCtrl_hQue != 0 );
 #endif
 #ifdef TASK_SAMPLE
-    // タスク生成
+    // タスク生成.
     retv = osTask_create( &SwCtrl_Task, "SwCtrl", SwCtrl_STACKSZ/4,
                         NULL, SwCtrlTASK_PRI | portPRIVILEGE_BIT, &handle );
     configASSERT( retv == pdPASS );
@@ -383,8 +311,9 @@ void SwCtrl_init( void )
 
 /**
  * @brief ExtSW-ON割込みハンドラ処理.
+ *	ExtSWの割込みハンドラからコールされる.
  */
-void ExtSW_activeHandler( EXT_DEV dev )
+void ExtSW_activeHandler( ExtSW dev )
 {
     portBASE_TYPE   dispatch = pdFALSE;
 #ifdef QUEUE_SAMPLE
@@ -398,14 +327,14 @@ void ExtSW_activeHandler( EXT_DEV dev )
 #endif
 #ifdef QUEUE_SAMPLE
     switch( dev ) {
-    case DEV_ExtSW1:
-        msg.dev_no    = DEV_ExtSW1;
-        msg.dev_event = DEV_EVENT_ON;
+    case ExtSW1:
+        msg.dev_no    = DEV_SW1;
+        msg.dev_event = EVENT_ON;
         osQue_sendISR( SwCtrl_hQue, &msg, &dispatch );
         break;
-    case DEV_ExtSW2:
-        msg.dev_no    = DEV_ExtSW2;
-        msg.dev_event = DEV_EVENT_ON;
+    case ExtSW2:
+        msg.dev_no    = DEV_SW2;
+        msg.dev_event = EVENT_ON;
         osQue_sendISR( SwCtrl_hQue, &msg, &dispatch );
         break;
     default:
@@ -418,8 +347,9 @@ void ExtSW_activeHandler( EXT_DEV dev )
 
 /**
  * @brief ExtSW-OFF割込みハンドラ処理.
+ *	ExtSWの割込みハンドラからコールされる.
  */
-void ExtSW_inactiveHandler( EXT_DEV dev )
+void ExtSW_inactiveHandler( ExtSW dev )
 {
     portBASE_TYPE   dispatch = pdFALSE;
 #ifdef QUEUE_SAMPLE
@@ -433,14 +363,14 @@ void ExtSW_inactiveHandler( EXT_DEV dev )
 #endif
 #ifdef QUEUE_SAMPLE
     switch( dev ) {
-    case DEV_ExtSW1:
-        msg.dev_no    = DEV_ExtSW1;
-        msg.dev_event = DEV_EVENT_OFF;
+    case ExtSW1:
+        msg.dev_no    = DEV_SW1;
+        msg.dev_event = EVENT_OFF;
         osQue_sendISR( SwCtrl_hQue, &msg, &dispatch );
         break;
-    case DEV_ExtSW2:
-        msg.dev_no    = DEV_ExtSW2;
-        msg.dev_event = DEV_EVENT_OFF;
+    case ExtSW2:
+        msg.dev_no    = DEV_SW2;
+        msg.dev_event = EVENT_OFF;
         osQue_sendISR( SwCtrl_hQue, &msg, &dispatch );
         break;
     default:

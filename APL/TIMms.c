@@ -220,7 +220,7 @@ void TIMER_ms_expire( int over )
 	if( over ){
 		TIMms_Tick.tick_w.hi ++;
 		// Œv‘ª—p
-		ExtLED1_toggle();
+		//ExtLED1_toggle();
 	}
 
     dispatch  = pdFALSE;

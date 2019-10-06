@@ -1954,6 +1954,9 @@
       </file>
     </group>
     <file>
+      <name>$PROJ_DIR$\..\..\APL\apl_init.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\APL\APL_osRes.h</name>
     </file>
     <file>
@@ -1963,14 +1966,14 @@
       <name>$PROJ_DIR$\..\..\APL\shell.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\APL\SW_Ctrl.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\APL\TIMms.c</name>
     </file>
   </group>
   <group>
     <name>Boot</name>
-    <file>
-      <name>$PROJ_DIR$\..\..\APL\apl_init.c</name>
-    </file>
     <file>
       <name>$PROJ_DIR$\..\..\Boot\main.c</name>
     </file>

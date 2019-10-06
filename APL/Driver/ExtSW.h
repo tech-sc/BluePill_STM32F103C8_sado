@@ -35,11 +35,11 @@
 #define ExtSW1_PIN			GPIO_PIN_8
 #define EXTI9_5_PRIORITY	5
 
-typedef enum ExtSW_e {
-	ExtSW1 = 1,
+typedef enum ExtSW {
+	ExtSW1 = 0x0101,
 	ExtSW2,
 	MAX_ExtSW
-}ExtSW_e;
+}ExtSW;
 
 /**
  * @brief 外部スイッチの初期設定.
