@@ -16,6 +16,8 @@ D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\Builder\EWARM7.50\..\..\O
 -I
 D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\Builder\EWARM7.50\..\..\OS\FreeRTOS\portable\ARM_CM3
 -I
+D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\Builder\EWARM7.50\..\..\APL\Driver
+-I
 D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\Builder\EWARM7.50\..\..\APL
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3_2\arm\inc
@@ -36,8 +38,11 @@ D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\OS\FreeRTOS\include
 -I
 D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\OS\FreeRTOS\portable\ARM_CM3
 -I
+D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\APL\Driver
+-I
 D:\UserFile\410_GitLocalRepo\BluePill_STM32F103C8_sado\APL
 -DSTM32F103xB=1
+-DUSE_FULL_LL_DRIVER=1
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0

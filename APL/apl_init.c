@@ -40,7 +40,7 @@ void apl_init( void )
 	TIMms_initTimer();
 	shell_init();
 	LOG_init( LOG_DEBUG );
-        SwCtrl_init();
+    SwCtrl_init();
 
 	printf("%s\n", __FUNCTION__);
     expire_mutex = osMutex_create();

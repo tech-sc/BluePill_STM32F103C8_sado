@@ -2181,6 +2181,9 @@
         <file>
           <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_tim.c</name>
         </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\CubeF1Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_utils.c</name>
+        </file>
       </group>
     </group>
     <file>

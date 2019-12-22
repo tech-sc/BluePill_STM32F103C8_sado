@@ -17,6 +17,7 @@
 #include "stm32f1xx_ll_bus.h"
 #include "stm32f1xx_ll_system.h"
 #include "stm32f1xx_ll_cortex.h"
+#include "stm32f1xx_ll_utils.h"
 #include "BSP_LED.h"
 #include "ExtLED.h"
 #include "ExtSW.h"
@@ -80,7 +81,7 @@ static void SystemClock_Config(void)
 	while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL);
 
 	LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
-	SystemCoreClock = configCPU_CLOCK_HZ;
+	LL_SetSystemCoreClock( configCPU_CLOCK_HZ );
 }
 
 /************************************************************************************//**
